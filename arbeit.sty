@@ -1,0 +1,133 @@
+%% Verwendete Packages
+\usepackage{etex}								% Resolve "no room for a new \dimen"
+\usepackage[ngerman, english]{babel}
+\usepackage[utf8]{inputenc}						% Unicode
+\usepackage{multicol}        					% fuer einen 2-Seiten Index
+\usepackage[usenames,dvipsnames]{color}   		% fuer die Benutzung von Farben
+\usepackage{amssymb, amsmath, amscd,amsfonts}	% AMS-Zeichensaetze
+\usepackage{faktor}								% \faktor for quotients
+\usepackage{xypic}
+\usepackage{mathrsfs,enumerate,ntheorem,yfonts,stmaryrd}
+\usepackage{array}
+\usepackage{ae}
+\usepackage{accents}
+\usepackage{epsfig}
+\usepackage{kpfonts}
+\usepackage{blindtext}
+\usepackage{ifpdf}			% workaround for tikz auto-pst-pdf incompatibility		
+\ifpdf\usepackage{tikz}\fi  % https://tex.stackexchange.com/questions/166623/tikz-and-auto-pst-pdf-break-ghostscript
+\usetikzlibrary{bending,shapes,decorations.pathreplacing}
+\usepackage[crop=off]{auto-pst-pdf}				% compatibility package of pstricks for pdflatex.
+											    % Make sure to use the -shell-escape option
+\usepackage{pst-all}							% pstricks
+\usepackage{varwidth}							% dynamic minipage size
+\usepackage[automark,headsepline,markcase=upper]{scrlayer-scrpage}	% Kopf- und Fußzeilen
+\usepackage{geometry}		% Definierbare Seitenränder
+\usepackage[pdfpagelabels]{hyperref}	% Fixes page numbering in pdf viewers.
+\usepackage[algoruled, linesnumbered]{algorithm2e}			% for displaying pseudocode
+\usepackage[final]{microtype}	% Verbessert Textlayout, ggf. auskommentieren, um Kompilieren zu beschleunigen
+%\usepackage[printonlyused, withpage]{acronym}		% Abkürzungen
+\usepackage[hyperref=true, 
+		    backend=bibtex,
+		    style=alphabetic]{biblatex} 				% For references and bibliography
+\usepackage[babel,english=british]{csquotes}			% s.a.
+\usepackage{chngcntr}									% Provides \counterwithout
+\usepackage{enumitem}			%for non-italic roman number in enumerations (label={\upshape(\roman*)})
+\usepackage{etoolbox}									% Enables toggle-commands, AtBeginEnvironment etc.
+
+\usepackage{makeidx}
+\makeindex
+
+%% Fix figure labeling
+\counterwithout{figure}{chapter}
+
+%% Separate multicites by comma
+\renewcommand\multicitedelim{\addcomma\space}
+
+%% Kopf- und Fußzeilen definieren
+\clearpairofpagestyles
+\setkomafont{pagehead}{\slshape}
+\lehead{\MakeUppercase{\headmark}}
+\rohead{\MakeUppercase{\headmark}}
+\lefoot[\pagemark]{\pagemark}
+\rofoot[\pagemark]{\pagemark}
+\pagestyle{scrheadings}
+
+%% Change comment style of algorithms
+\newcommand\mycommfont[1]{\footnotesize\bfseries\textcolor{blue}{#1}}
+\SetCommentSty{mycommfont}
+\newcommand\myargfont[1]{\rmfamily#1}
+\SetArgSty{myargfont}
+
+%% Seitenformat
+\geometry{left=3.5cm, right=2.5cm, top=3.5cm, bottom=4cm}
+
+%% Formatierung von Absätzen
+\linespread{1.1}
+\parindent 0cm
+\parskip 4pt
+
+%% Bold math-fonts in heading
+\makeatletter
+\g@addto@macro\bfseries{\boldmath}
+\makeatother
+
+%% Prevent linebreak in inline formulas.
+\binoppenalty=\maxdimen
+\relpenalty=\maxdimen
+
+
+%% Theorem-Umgebung
+%\theoremstyle{changebreak}  % Definition 1.3.1  <-->  1.3.1 Definition
+\newtheorem{theorem}{Theorem}[section]
+\counterwithin*{theorem}{chapter}		% Resets the theorem counter when a new chapter is beginning
+\counterwithin*{theorem}{section}
+\newtheorem{coro}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{prop}[theorem]{Proposition}
+% Environments for theorems listed in the appendix
+\newtheorem{theoremApp}{Theorem}[chapter]
+\newtheorem{propApp}[theoremApp]{Proposition}
+
+\theorembodyfont{\normalfont}
+
+\newtheorem{defi}[theorem]{Definition}
+\newtheorem{ex}[theorem]{Example}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{notation}[theorem]{Notation}
+% Environments for theorems listed in the appendix
+\newtheorem{remarkApp}[theoremApp]{Remark}
+\theoremstyle{break}
+\newtheorem{defibreak}[theorem]{Definition}
+
+%% Beweise
+\makeatletter
+\def\proof{\@ifnextchar[\opargproof
+	{\opargproof[\textit Proof:]}}
+\def\opargproof[#1]{\par\noindent {\textbf #1 }}
+\def\endproof{{\unskip\nobreak\hfil\penalty50\hskip8mm\hbox{}
+		\nobreak\hfil
+		\(\boxempty\)\parfillskip=0mm \par\vspace{3mm}}}
+\makeatother
+
+%% Todo-Befehl
+\newcommand{\todo}[1]{\textcolor{red}{#1}}
+
+%% Anhang A. statt A. Anhang
+%\usepackage{etoolbox}
+%\providecommand*{\appendixmore}{
+%	\renewcommand*{\chapterformat}{%
+%		\appendixname~\thechapter\autodot\enskip}}% sorgt dafür das Anhang vor dem Buchstaben des jeweiligen Anhangs steht, ohne das man headings benutzt
+%\newcommand*{\SavedOriginalchaptertocentry}{}
+%\appto\appendixmore{%
+%	\let\SavedOriginaladdchaptertocentry\addchaptertocentry
+%	\renewcommand*{\addchaptertocentry}[2]{%
+%		\ifstr{#1}{}{% Eintrag ohne Nummer
+%			\SavedOriginalchaptertocentry{#1}{#2}%
+%		}{% Eintrag mit Nummer
+%		\SavedOriginaladdchaptertocentry{}{%
+%			\string\expandafter\string\MakeUppercase\string\appendixname
+%			~#1.\string\enskip{}#2}%
+%	}%
+%}%
+%}

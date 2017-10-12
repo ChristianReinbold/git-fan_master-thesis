@@ -1,0 +1,75 @@
+\documentclass[
+	reqno, 
+	fontsize=12pt, 
+	twoside,
+	numbers=noenddot	% Removes dots after figure labels (Figure 1.: ... becomes Figure 1: ...)
+	]{scrbook}
+
+\usepackage{arbeit}
+
+\input{macros}
+\bibliography{references}
+                                 
+\begin{document}
+	
+	\newcommand{\TypeDerArbeit}{Masterarbeit}
+	\newcommand{\Student}{Christian Reinbold}
+	\newcommand{\Betreuer}{\parbox[t]{8cm}{apl. Prof. Dr. Anne Frühbis-Krüger \\ Dr. Janko Böhm \\ Dr. Mirko  Rahn}}
+	\newcommand{\Kooperation}{Technische Universität Kaiserslautern \\
+							  Fraunhofer-Institut für Techno- und Wirtschaftsmathematik}
+	\newcommand{\Matrikelnummer}{2942360}
+	\newcommand{\Erstpruefer}{apl. Prof. Dr. Anne Frühbis-Krüger}
+	\newcommand{\Zweitpruefer}{Dr. Janko Böhm}
+	\newcommand{\AbgabeDerArbeit}{11.01.2018}
+	\newcommand{\TitelDerArbeit}{Computation of the GIT-fan using a massively parallel implementation}
+	\newcommand{\Einrichtung}{Leibniz Universität Hannover\\Fakultät für Mathematik und Physik\\Institut für Algebraische Geometrie}
+	
+	\include{includes/titlepage}
+	
+	\frontmatter
+	{
+		\pagestyle{plain}
+		\include{includes/abstract}
+		\cleardoublepage
+		\include{includes/acknowledgements}
+	}
+	\tableofcontents
+	\cleardoublepage
+	\mainmatter
+	
+	\addtolength{\headheight}{3pt}
+	\setcounter{chapter}{0}
+	\include{includes/introduction}
+	\include{includes/preliminaries}
+	\include{includes/algorithm}
+	\include{includes/implementation}
+	\include{includes/applications}
+	\include{includes/conclusion}
+	
+	\appendix
+	\include{includes/appendix}
+	
+	% Literaturhinweise
+	\backmatter
+	\nocite{*}
+	\addcontentsline{toc}{chapter}{Bibliography}
+	\printbibliography
+	
+	% Index
+	\cleardoublepage
+	\addcontentsline{toc}{chapter}{Index}
+	\printindex
+	
+	% Abkürzungsverzeichnis
+	%\cleardoublepage
+	%\addcontentsline{toc}{chapter}{List of abbreviations}
+	%\input{includes/acronyms}
+	
+	% Selbstständigkeitserklärung
+	\cleardoublepage
+	{
+		\pagestyle{empty}
+		\include{includes/erklaerung}
+	}
+	
+\end{document}

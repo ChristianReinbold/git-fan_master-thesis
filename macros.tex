@@ -1,0 +1,53 @@
+
+%% Flags
+\newtoggle{classneg}
+\togglefalse{classneg}
+\def\layouthack		#1{#1}
+
+%% Abbreviations
+\def\defeq			{\mathrel{\mathop:}=}
+\def\eqdef			{=\mathrel{\mathop:}}
+\def\defequiv		{\mathrel{\mathop:}\Leftrightarrow}
+\def\pow			#1{{\mathcal{P}(#1)}}
+\def\restrict		#1{{\big |_{#1}}}
+
+%% Define keywords for algorithms.
+\SetKw{Not}{not}
+\SetKw{Null}{null}
+\SetKw{And}{and}
+\SetKw{Or}{or}
+\SetKw{New}{new}
+\SetKw{True}{true}
+\SetKw{Continue}{continue}
+\SetKw{Break}{break}
+\SetKwFunction{First}{first}
+\SetKwComment{Comment}{/* }{ */}
+\SetKwInput{KwDependencies}{Dependencies}
+\SetKwData{Map}{Map}
+\SetKwData{List}{List}
+\SetKwData{Queue}{Queue}
+
+%% Provide command for a raised chi so that it does not exceed the baseline
+\DeclareRobustCommand{\rchi}{{\mathpalette\irchi\relax}}
+\newcommand{\irchi}[2]{\raisebox{0.85\depth}{$#1\chi$}} % inner command, used by \rchi
+
+%% Langer Trennstrich
+\def\horizontalline	{\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}}
+
+%% Unbreakable block
+\AtBeginEnvironment{nobreak}{\begin{minipage}{\textwidth}}
+\AtEndEnvironment{nobreak}{\end{minipage}}
+
+%% Block für Einschübe
+\definecolor{light-gray}{gray}{0.95}
+\newcommand{\Block}[1]{
+\vspace{2mm}\noindent
+\fcolorbox{black}{light-gray}{ \begin{minipage}[r]{0.97\textwidth}
+		\setcounter{mpfootnote}{\value{footnote}}
+		\renewcommand{\thempfootnote}{\arabic{mpfootnote}}
+		
+		#1
+		
+		\setcounter{footnote}{\value{mpfootnote}}
+	\end{minipage} }
+}
