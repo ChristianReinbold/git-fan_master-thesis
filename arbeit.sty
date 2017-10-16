@@ -16,7 +16,7 @@
 \usepackage{blindtext}
 \usepackage{ifpdf}			% workaround for tikz auto-pst-pdf incompatibility		
 \ifpdf\usepackage{tikz}\fi  % https://tex.stackexchange.com/questions/166623/tikz-and-auto-pst-pdf-break-ghostscript
-\usetikzlibrary{bending,shapes,decorations.pathreplacing}
+\usetikzlibrary{automata,calc,arrows,shapes,petri}
 \usepackage[crop=off]{auto-pst-pdf}				% compatibility package of pstricks for pdflatex.
 											    % Make sure to use the -shell-escape option
 \usepackage{pst-all}							% pstricks
@@ -26,10 +26,10 @@
 \usepackage[pdfpagelabels]{hyperref}	% Fixes page numbering in pdf viewers.
 \usepackage[algoruled, linesnumbered]{algorithm2e}			% for displaying pseudocode
 \usepackage[final]{microtype}	% Verbessert Textlayout, ggf. auskommentieren, um Kompilieren zu beschleunigen
-%\usepackage[printonlyused, withpage]{acronym}		% Abkürzungen
+\usepackage[printonlyused, withpage]{acronym}		% Abkürzungen
 \usepackage[hyperref=true, 
 		    backend=bibtex,
-		    style=alphabetic]{biblatex} 				% For references and bibliography
+			maxbibnames=99]{biblatex} 				% For references and bibliography
 \usepackage[babel,english=british]{csquotes}			% s.a.
 \usepackage{chngcntr}									% Provides \counterwithout
 \usepackage{enumitem}			%for non-italic roman number in enumerations (label={\upshape(\roman*)})
@@ -40,6 +40,14 @@
 
 %% Fix figure labeling
 \counterwithout{figure}{chapter}
+
+%% Set tikz styles for rendering petri nets
+\tikzstyle{place}=[circle,thick,draw,fill=black!10,minimum size=7mm]
+\tikzstyle{transition}=[rectangle,thick,draw,fill=black,inner sep=0.7mm,minimum height=7mm]
+\tikzstyle{every picture}+=[auto]
+\tikzstyle{every picture}+=[bend angle=20]
+\tikzstyle{every picture}+=[node distance=1.3cm]
+\tikzstyle{every picture}+=[>=stealth']
 
 %% Separate multicites by comma
 \renewcommand\multicitedelim{\addcomma\space}

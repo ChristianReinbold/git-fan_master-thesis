@@ -1,0 +1,20 @@
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+	\node[place,tokens=1] (0) {};
+	\node[transition] (1) [right of=0] {};
+	\node[place]      (2) [right of=1] {};
+	\path
+		(0) edge [post] (1)
+		(1) edge [post] (2);
+		
+	\node[place,tokens=1] (3) [below of =0] {};
+	\node[transition] (4) [right of=3] {};
+	\node[place]      (5) [right of=4] {};
+	\path
+	(3) edge [post] (4)
+	(4) edge [post] (5);
+	\end{tikzpicture}
+	\caption{Modelling concurrent processes in a Petri net.}
+	\label{net:sample_concurrency}
+\end{figure}

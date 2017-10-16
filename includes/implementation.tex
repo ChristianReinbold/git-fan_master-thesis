@@ -1,0 +1,54 @@
+\chapter{Implementation}
+
+In the following we present the implementation of the algorithm discussed in the previous chapter. In contrast to the existing \singular{} implementation \emph{gitfan.lib} \cite{gitfan}, which forms the foundation of our work, the approach described here utilises high performance computing methods in order to speed up the execution by running the algorithm on any number of machines simultaneously. Naturally, one has to identify independent components permitting concurrent execution on the one hand and inherent sequential processes on the other hand. As the sequential parts of the algorithm mostly agree with \emph{gitfan.lib} -- only signatures have been modified, providing an appropriate interface for the superordinate parallel environment -- we skip a detailed discussion of those and refer the interested reader to \cite{gitfan}. The chapter is structured as follows: First, we discuss the employed parallelisation framework \gpispace{} developed by the \ac{Fraunhofer ITWM} and follow up with the integration of singular code into \gpispace{} applications. Next, a parallel design of algorithm \todo{(ref needed to main algorithm in previous chapter)} is presented. A separate section covers approaches for managing found GIT cones, a potential bottleneck due to data dependencies. Finally, we describe input and output formats, additional features such as speeding up the execution by precomputed results and executed software tests in order to verify the functional correctness of the program.
+
+\section{\gpispace}
+
+\gpispace{} is a workflow management system developed by the \ac{Fraunhofer ITWM} which supports the execution of arbitrary workflows on ultra scale systems \cite{gpispace}. It consists of three key components: 
+\begin{itemize}
+	\item the \ac{DRTS}, which is responsible for building and managing arbitrary worker topologies based on the available compute nodes, resource management and job scheduling. It supports the reallocation of jobs in case of hardware failures and further integrates dynamically added hardware
+	\item the \ac{WE}. It tracks the state of the workflow, identifies a front of activities for which all dependencies are resolved and laces jobs from input data and active transitions which then are sent to the \ac{DRTS} for scheduling.
+	\item a virtual memory layer, which provides the necessary infrastructure for the \ac{PGAS} programming model. It relies on \textsc{GPI} by \ac{Fraunhofer ITWM} \cite{gpi}.
+\end{itemize}
+
+The framework has been developed with separation of concerns in mind, whereby the concerns here are given by computation and coordination \cite{coordination_language}. In our case the computation takes place in sequential \singular-routines. The dependencies and data transfers between this routines, which assemble the particular routines into a complex, parallel algorithm, are described by a special domain language in the the coordination layer. In \gpispace{}, this domain language is chosen to be an extension of the well known Petri net model introduced in 1962 by Carl Adam Petri \cite{petri}.
+
+\subsection*{Petri nets}
+
+Formally, an (unweighted) \emph{Petri net} is a triple $(P, T, F)$ of \emph{places} $P$, \emph{transitions} $T$ and directed \emph{arcs} $F\subseteq (P\times T)\cup(T\times P)$ relating the former concepts. We demand that $P\cap T = \emptyset$. A function $M\colon P\rightarrow\natural$ is called \emph{marking} and describes a possible state of the Petri net. If we have $M(p)=k$ for a place $p$ and the current state of the Petri net is given by $M$, we say that $p$ holds $k$ \emph{tokens}. Visually, circles depict places, rectangles are transitions and arrows between circles and rectangles represent arcs whose direction is indicated by the tip. The current state $M$ of the Petri net is displayed by placing $M(p)$ dots in the circle representing the place $p$. Figure~\ref{net:sample} gives an example for the graphical representation of a Petri net.
+
+\input{graphics/petri_net_sample}
+
+A transition $t$ is said to be \emph{active}, iff
+$$\forall p\in P\colon (p,t)\in F\Rightarrow M(p) > 0$$
+holds. In this case \emph{firing} $t$ means to transform the current state $M$ into $M'$ by the update rule
+$$M'(p) \defeq \begin{cases}
+M(p) - 1 & (p,t)\in F,\ (t,p)\notin F \\
+M(p) + 1 & (p,t)\notin F,\ (t,p)\in F \\
+M(p) & \text{else}
+\end{cases}$$
+for all $p\in P$. We interpret this as follows: For every incoming arc $(p,t)$ from $p$ a token in $p$ is consumed and for every outgoing arc $(t, p')$ to $p'$ a new token is placed into $p'$. Note that the notion of tokens ``moving through transitions'' instead of consumption and creation of tokens is erroneous as we will see later on when binding data to them.
+
+\input{graphics/petri_net_sample_concurrency}
+
+An important property of Petri nets is given by the fact that in many cases the same result is obtained if the order in which two transitions $t_1$ and $t_2$ fire is reversed. This allows the modelling of concurrent behaviour. When executing the Petri net model on a machine, the necessary steps for firing $t_1$ and $t_2$ respectively may be performed in parallel. Figure~\ref{net:sample_concurrency} depicts such a situation. Note that figure~\ref{net:sample} also shows an example for concurrent behaviour in which the transition may fire twice. However, the order in which the tokens in the left place are consumed is of no relevance. This example seems trivial as tokens located at the same place are indistinguishable. However, this is not the case anymore when binding data to tokens. In fact, figure~\ref{net:sample} depicts the common scenario of concurrent behaviour in our algorithm, as parallel execution is mostly achieved by invoking the same routine for varying, independent input data.
+
+\subsection*{Extending petri nets by the notion of time}
+
+% all extensions
+% details of the workflow engine with petri nets in mind and its interplay with the drts
+\cite{petri_net_wms}
+
+\section{Integration of Singular}
+drawbacks
+
+\section{Application flow \& Concurrency}
+
+\section{GIT cone data structure}
+
+\section{Input \& Output structure}
+
+\section{Additional features}
+an Kommandozeilenparameter entlanghangeln
+
+\section{Software testing}

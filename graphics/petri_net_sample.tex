@@ -1,0 +1,13 @@
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+	\node[place,tokens=2] (0) {};
+	\node[transition] (1) [right of=0] {};
+	\node[place]      (2) [right of=1] {};
+	\path
+		(0) edge [post] (1)
+		(1) edge [post] (2);
+	\end{tikzpicture}
+	\caption{Graphical representation of a Petri net with two places and one transition. The current state is a marking that sends the left place to $2$ and the second place to $0$.}
+	\label{net:sample}
+\end{figure}

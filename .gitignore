@@ -2,4 +2,4 @@ build/*
 !build/abschlussarbeit.pdf
 
 abschlussarbeit-pics.pdf
-abschlussarbeit-autopp.run.xml
+abschlussarbeit-autopp.*
