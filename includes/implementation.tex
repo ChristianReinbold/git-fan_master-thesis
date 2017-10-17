@@ -27,16 +27,31 @@ M(p) - 1 & (p,t)\in F,\ (t,p)\notin F \\
 M(p) + 1 & (p,t)\notin F,\ (t,p)\in F \\
 M(p) & \text{else}
 \end{cases}$$
-for all $p\in P$. We interpret this as follows: For every incoming arc $(p,t)$ from $p$ a token in $p$ is consumed and for every outgoing arc $(t, p')$ to $p'$ a new token is placed into $p'$. Note that the notion of tokens ``moving through transitions'' instead of consumption and creation of tokens is erroneous as we will see later on when binding data to them.
+for all $p\in P$. We interpret this as follows: For every incoming arc $(p,t)$ from $p$ a token in $p$ is consumed and for every outgoing arc $(t, p')$ to $p'$ a new token is placed into $p'$. Note that the notion of tokens ``moving through transitions'' instead of consumption and creation of tokens is erroneous as we will see later on when attaching data to them.
 
 \input{graphics/petri_net_sample_concurrency}
 
-An important property of Petri nets is given by the fact that in many cases the same result is obtained if the order in which two transitions $t_1$ and $t_2$ fire is reversed. This allows the modelling of concurrent behaviour. When executing the Petri net model on a machine, the necessary steps for firing $t_1$ and $t_2$ respectively may be performed in parallel. Figure~\ref{net:sample_concurrency} depicts such a situation. Note that figure~\ref{net:sample} also shows an example for concurrent behaviour in which the transition may fire twice. However, the order in which the tokens in the left place are consumed is of no relevance. This example seems trivial as tokens located at the same place are indistinguishable. However, this is not the case anymore when binding data to tokens. In fact, figure~\ref{net:sample} depicts the common scenario of concurrent behaviour in our algorithm, as parallel execution is mostly achieved by invoking the same routine for varying, independent input data.
+An important property of Petri nets is given by the fact that in many cases the same result is obtained if the order in which two transitions $t_1$ and $t_2$ fire is reversed. This allows the modelling of concurrent behaviour. When executing the Petri net model on a machine, the necessary steps for firing $t_1$ and $t_2$ respectively may be performed in parallel. Figure~\ref{net:sample_concurrency} depicts such a situation. Note that figure~\ref{net:sample} also shows an example for concurrent behaviour in which the transition may fire twice. However, the order in which the tokens in the left place are consumed is of no relevance. This example seems trivial as tokens located at the same place are indistinguishable. However, this is not the case anymore when attaching data to tokens. In fact, figure~\ref{net:sample} depicts the common scenario of concurrent behaviour in our algorithm, as parallel execution is mostly achieved by invoking the same routine for varying, independent input data.
 
-\subsection*{Extending petri nets by the notion of time}
+\subsection*{Coloured Petri nets and guards}
 
-% all extensions
-% details of the workflow engine with petri nets in mind and its interplay with the drts
+Workflows describe a (possible concurrent) progression of processes, hence it is evident to model a process by a transition. The input and output data of a process is taken into account by attaching data values of a predefined type to each token. Then every incoming arc provides input data for the process corresponding to the target transition, whereas every outgoing arc describes output data of the source transition that should be put into the target place. A place may only hold tokens of a single type, introducing strong typing to Petri nets. This kind of Petri net is called \emph{Coloured Petri net}, developed by Kurt Jensen in 1980. The term originates from the analogy of understanding each distinct type as a unique color. A formal treatment of this concept may be found in \cite{cp_nets}.
+
+In order to control the data flow, each transition may be tagged with a predicate over the types of places with incoming arcs, which is called \emph{condition} or \emph{guard} \cite{cp_nets}. The activation rule for a transition is extended such that not only a token has to be present for every incoming arc, but also the data values of the consumed tokens have to satisfy the condition. \gpispace{} provides its own expression language in order to specify conditions. Figure~\ref{net:sample_guard} shows a transition that consumes tokens with positive data values only.
+
+\input{graphics/petri_net_sample_guard}
+
+\subsection*{Expressions}
+
+\gpispace{} supports two kinds of transitions. The first kind triggers a module call whenever firing, executing arbitrary \cplusplus-code where the input and output tokens are mapped to references. The module call is packaged as a job and scheduled by the \ac{DRTS}. A lightweight approach that requires no scheduling is given by the second kind of transition. The expression language provided by \gpispace{} allows to specify the output data values of a transition by means of simple operations on the input data values. This extension is intended to be used for minor computations and saves the overhead of generating and scheduling a job by executing the expression directly within the \ac{WE}. For instance, counting consumed tokens may be realised that way, see figure~\ref{net:sample_expression}. If the counting would be realised with \cplusplus, each increment will cause a disproportionate communication and scheduling overhead.
+
+\input{graphics/petri_net_sample_expression}
+
+%\subsection*{Extending Petri nets by the notion of time}
+% im Prinzip überflüssig. Fasse das damit zusammen, wenn die Funktionsweise der WE erklärt wird
+
+% pnet compiler, xml-syntax
+% details of the workflow engine with petri nets in mind and its interplay with the drts - transitions should have no side effects
 \cite{petri_net_wms}
 
 \section{Integration of Singular}

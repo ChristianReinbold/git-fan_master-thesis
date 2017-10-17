@@ -1,0 +1,16 @@
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+	\node[place,tokens=3] (0) {};
+	\node[transition] (1) [right of=0] {};
+	\node[place,tokens=1] (2) [right of=1] {};
+	\path
+		(0) edge [post] (1)
+		(2) edge [pre, bend right] (1)
+		(2) edge [post, bend left] (1);
+	\node[draw] at ($(1) + (0,-0.9)$) {$\gpiresolve{i} \defeq \gpiresolve{i} + 1$};
+	\node at ($(2) + (1,0)$) {$i = 0$};
+	\end{tikzpicture}
+	\caption{Expressions in a Petri net. After firing the transition three times, the left place contains no tokens anymore and the right place contains one token with $i=3$.}
+	\label{net:sample_expression}
+\end{figure}
