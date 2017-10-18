@@ -16,7 +16,7 @@
 \usepackage{blindtext}
 \usepackage{ifpdf}			% workaround for tikz auto-pst-pdf incompatibility		
 \ifpdf\usepackage{tikz}\fi  % https://tex.stackexchange.com/questions/166623/tikz-and-auto-pst-pdf-break-ghostscript
-\usetikzlibrary{automata,calc,arrows,shapes,petri}
+\usetikzlibrary{automata,calc,arrows,shapes,petri, backgrounds}
 \usepackage[crop=off]{auto-pst-pdf}				% compatibility package of pstricks for pdflatex.
 											    % Make sure to use the -shell-escape option
 \usepackage{pst-all}							% pstricks
@@ -34,6 +34,7 @@
 \usepackage{chngcntr}									% Provides \counterwithout
 \usepackage{enumitem}			%for non-italic roman number in enumerations (label={\upshape(\roman*)})
 \usepackage{etoolbox}									% Enables toggle-commands, AtBeginEnvironment etc.
+\usepackage{adjustbox}
 
 \usepackage{makeidx}
 \makeindex

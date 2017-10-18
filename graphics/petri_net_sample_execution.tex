@@ -1,0 +1,101 @@
+\begin{figure}
+	\centering
+	\begin{tabular}{cc}
+		\adjustbox{valign=t}{\begin{tikzpicture}[framed]
+		\node[place,tokens=2] (0) {};
+		\node[transition] (1) [right of=0] {};
+		\node[place]      (2) [right of=1] {};
+		\path
+		(0) edge [post] (1)
+		(1) edge [post] (2);
+		\node[anchor=west] at ($(0) + (-1.6,0)$) {$\begin{aligned}x &= 1\\[-3\jot] x&= 5\end{aligned}$};
+		\node[anchor=west] at ($(2) + (0.4,0)$) {\phantom{$x = 1$}};
+		
+		\node[anchor=west,inner sep=0] at ($(0.west) + (0,-0.8)$) {active transitions:};
+		\end{tikzpicture}}
+		&
+		\adjustbox{valign=t}{\begin{tikzpicture}[framed]
+		\node[place,tokens=1] (0) {};
+		\node[transition] (1) [right of=0] {};
+		\node[place]      (2) [right of=1] {};
+		\path
+		(0) edge [post] (1)
+		(1) edge [post] (2);
+		\node[anchor=west] at ($(0) + (-1.6,0)$) {$x = 1$};
+		\node[anchor=west] at ($(2) + (0.4,0)$) {\phantom{$x = 1$}};
+		
+		\node[anchor=west,inner sep=0] at ($(0.west) + (0,-0.8)$) {active transitions:};
+		\node[place,tokens=1] (0') at ($(0) + (0,-1.6)$) {};
+		\node[transition] (1') [right of=0'] {};
+		\node[place]      (2') [right of=1'] {};
+		\path
+		(0') edge [post] (1')
+		(1') edge [post] (2');
+		\node[anchor=west] at ($(0') + (-1.6,0)$) {$x = 5$};
+		\end{tikzpicture}}
+		\\[2.5cm]
+		\adjustbox{valign=t}{\begin{tikzpicture}[framed]
+		\node[place] (0) {};
+		\node[transition] (1) [right of=0] {};
+		\node[place]      (2) [right of=1] {};
+		\path
+		(0) edge [post] (1)
+		(1) edge [post] (2);
+		\node[anchor=west] at ($(0) + (-1.6,0)$) {\phantom{$x = 1$}};
+		\node[anchor=west] at ($(2) + (0.4,0)$) {\phantom{$x = 1$}};
+		
+		\node[anchor=west,inner sep=0] at ($(0.west) + (0,-0.8)$) {active transitions:};
+		\node[place,tokens=1] (0') at ($(0) + (0,-1.6)$) {};
+		\node[transition] (1') [right of=0'] {};
+		\node[place]      (2') [right of=1'] {};
+		\path
+		(0') edge [post] (1')
+		(1') edge [post] (2');
+		\node[anchor=west] at ($(0') + (-1.6,0)$) {$x = 5$};
+		\node[place,tokens=1] (0'') [below of=0'] {};
+		\node[transition] (1'') [right of=0''] {};
+		\node[place]      (2'') [right of=1''] {};
+		\path
+		(0'') edge [post] (1'')
+		(1'') edge [post] (2'');
+		\node[anchor=west] at ($(0'') + (-1.6,0)$) {$x = 1$};
+		\end{tikzpicture}}
+		&
+		\adjustbox{valign=t}{\begin{tikzpicture}[framed]
+		\node[place] (0) {};
+		\node[transition] (1) [right of=0] {};
+		\node[place,tokens=1] (2) [right of=1] {};
+		\path
+		(0) edge [post] (1)
+		(1) edge [post] (2);
+		\node[anchor=west] at ($(0) + (-1.6,0)$) {\phantom{$x = 1$}};
+		\node[anchor=west] at ($(2) + (0.4,0)$) {$x = 2$};
+			
+		\node[anchor=west,inner sep=0] at ($(0.west) + (0,-0.8)$) {active transitions:};
+		\node[place,tokens=1] (0') at ($(0) + (0,-1.6)$) {};
+		\node[transition] (1') [right of=0'] {};
+		\node[place]      (2') [right of=1'] {};
+		\path
+		(0') edge [post] (1')
+		(1') edge [post] (2');
+		\node[anchor=west] at ($(0') + (-1.6,0)$) {$x = 5$};
+		\end{tikzpicture}}
+		\\[3.8cm]
+		\adjustbox{valign=t}{\begin{tikzpicture}[framed]
+		\node[place] (0) {};
+		\node[transition] (1) [right of=0] {};
+		\node[place,tokens=2] (2) [right of=1] {};
+		\path
+		(0) edge [post] (1)
+		(1) edge [post] (2);
+		\node[anchor=west] at ($(0) + (-1.6,0)$) {\phantom{$x = 1$}};
+		\node[anchor=west] at ($(2) + (0.4,0)$) {$\begin{aligned}x &= 2\\[-3\jot] x&= 6\end{aligned}$};
+		
+		\node[anchor=west,inner sep=0] at ($(0.west) + (0,-0.8)$) {active transitions:};
+		\end{tikzpicture}}
+		&
+		\\
+	\end{tabular}
+	\caption{Possible execution of a Petri net. The module called by the transition sleeps for $x$ seconds and then returns the increment $x + 1$.}
+	\label{net:sample_execution}
+\end{figure}

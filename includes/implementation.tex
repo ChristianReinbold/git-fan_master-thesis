@@ -11,7 +11,9 @@ In the following we present the implementation of the algorithm discussed in the
 	\item a virtual memory layer, which provides the necessary infrastructure for the \ac{PGAS} programming model. It relies on \textsc{GPI} by \ac{Fraunhofer ITWM} \cite{gpi}.
 \end{itemize}
 
-The framework has been developed with separation of concerns in mind, whereby the concerns here are given by computation and coordination \cite{coordination_language}. In our case the computation takes place in sequential \singular-routines. The dependencies and data transfers between this routines, which assemble the particular routines into a complex, parallel algorithm, are described by a special domain language in the the coordination layer. In \gpispace{}, this domain language is chosen to be an extension of the well known Petri net model introduced in 1962 by Carl Adam Petri \cite{petri}.
+The framework has been developed with separation of concerns in mind, whereby the concerns here are given by computation and coordination \cite{coordination_language}. In our case the computation takes place in sequential \singular-routines. The dependencies and data transfers between this routines, which assemble the particular routines into a complex, parallel algorithm, are described by a special domain language in the the coordination layer. In \gpispace{}, this domain language is chosen to be an extension of the well known Petri net model introduced in 1962 by Carl Adam Petri \cite{petri}. Its formal nature permits a vast range of analysis and verification techniques. Concurrency is easily described due to locality of states. Furthermore, Petri nets yield precise execution semantics, supporting interruptions and restarts by differentiating between activation and execution of functional units. For this reason, fault tolerance to hardware failures is achieved by simply restarting failed executions. \cite{petri_net_wms}
+
+\gpispace{} is shipped with an appropriate compiler that generates all files which are necessary for execution from a XML description of a given Petri net. Furthermore, \gpispace{} also provides a basic visualization tool that comes in handy when debugging small to medium sized nets.
 
 \subsection*{Petri nets}
 
@@ -35,7 +37,7 @@ An important property of Petri nets is given by the fact that in many cases the 
 
 \subsection*{Coloured Petri nets and guards}
 
-Workflows describe a (possible concurrent) progression of processes, hence it is evident to model a process by a transition. The input and output data of a process is taken into account by attaching data values of a predefined type to each token. Then every incoming arc provides input data for the process corresponding to the target transition, whereas every outgoing arc describes output data of the source transition that should be put into the target place. A place may only hold tokens of a single type, introducing strong typing to Petri nets. This kind of Petri net is called \emph{Coloured Petri net}, developed by Kurt Jensen in 1980. The term originates from the analogy of understanding each distinct type as a unique color. A formal treatment of this concept may be found in \cite{cp_nets}.
+Workflows describe a (possible concurrent) progression of processes, hence it is evident to model a process by a transition. The input and output data of a process is taken into account by attaching data values of a predefined type to each token. Then every incoming arc provides input data for the process corresponding to the target transition, whereas every outgoing arc describes output data of the source transition that should be put into the target place. A place may only hold tokens of a single type, introducing strong typing to Petri nets. This kind of Petri net is called \emph{coloured Petri net}, developed by Kurt Jensen in 1980. The term originates from the analogy of understanding each distinct type as a unique color. A formal treatment of this concept may be found in \cite{cp_nets}.
 
 In order to control the data flow, each transition may be tagged with a predicate over the types of places with incoming arcs, which is called \emph{condition} or \emph{guard} \cite{cp_nets}. The activation rule for a transition is extended such that not only a token has to be present for every incoming arc, but also the data values of the consumed tokens have to satisfy the condition. \gpispace{} provides its own expression language in order to specify conditions. Figure~\ref{net:sample_guard} shows a transition that consumes tokens with positive data values only.
 
@@ -47,12 +49,17 @@ In order to control the data flow, each transition may be tagged with a predicat
 
 \input{graphics/petri_net_sample_expression}
 
-%\subsection*{Extending Petri nets by the notion of time}
-% im Prinzip überflüssig. Fasse das damit zusammen, wenn die Funktionsweise der WE erklärt wird
+\subsection*{Executing Petri nets}
 
-% pnet compiler, xml-syntax
-% details of the workflow engine with petri nets in mind and its interplay with the drts - transitions should have no side effects
-\cite{petri_net_wms}
+The \ac{WE} is responsible for executing a given Petri net. It manages its current state and identifies active transitions. Whenever such a transition is detected, its input tokens are consumed, bundling the attached data values into a job that describes the execution of the transition. Then, this job is submitted to the \ac{DRTS} where it awaits its execution. The set of active transitions not being executed already is called front of activities and generally contains numerous elements at once due to the locality of Petri nets. Thus, the \ac{DRTS} is able to utilise the available capacities by scheduling multiple jobs in parallel.
+
+When a job finishes, the results are returned to the \ac{WE} which extracts the output tokens and updates the state of the Petri net accordingly. Note that during the whole process described above, the input tokens for an active transition are consumed whereas the output tokens are not available yet. In order to fully describe the state of an executable Petri net, one has to incorporate the knowledge about all active transitions and its cached tokens into the state description. Hence, the \ac{WE} has to manage \emph{timed}, coloured Petri nets. Figure~\ref{net:sample_execution} illustrates the process of executing two active transitions in parallel. The module called by the transition sleeps for $x$ seconds, where $x$ is the input data value, and then returns the increment $x + 1$.
+
+\input{graphics/petri_net_sample_execution}
+
+The \ac{WE} itself is executed on a single node of the underlying system. Hence, special care must be taken when designing Petri nets. Instead of firing numerous transitions with execution times of milliseconds, one is advised to aggregate these transitions into a single one with an execution time of several seconds. Otherwise, the \ac{WE} quickly becomes a bottleneck since the amount of scheduled transitions per second does not scale with the number of available computing nodes. Furthermore, the marking of the Petri net is stored in the RAM of a single node. If large quantities of data have to be managed, the tokens should only contain a reasonable amount of metadata pointing to the real data which -- for instance -- is stored in a shared directory.
+
+\gpispace{} assumes that module calls have no side effects. Thus, when implementing the execution code for the transitions, possible racing conditions and concurrency issues have to be considered properly. Furthermore, each worker managed by the \ac{DRTS} is executed in its own process, but beyond that, jobs assigned to the same worker run in the same environment. For this reason jobs are influenced by changes of global state by prior executions. This behaviour causes several issues when integrating \singular{}, which is implemented as a large, global state machine.
 
 \section{Integration of Singular}
 drawbacks

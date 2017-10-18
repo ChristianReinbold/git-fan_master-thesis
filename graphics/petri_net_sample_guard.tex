@@ -5,7 +5,7 @@
 	\node[transition] (1) [right of=0] {};
 	\path
 		(0) edge [post] (1);
-	\node at ($(0) + (-1,0)$) {$\begin{aligned}x &= 1\\[-3\jot] x&= -1\end{aligned}$};
+	\node[anchor=west] at ($(0) + (-1.8,0)$) {$\begin{aligned}x &= 1\\[-3\jot] x&= -1\end{aligned}$};
 	\node at ($(1) + (0,0.7)$) {$\gpiresolve{x} \gpigt 0$};
 	\end{tikzpicture}
 	\caption{Guards in a Petri net. Only the token with $x=1$ activates the transition.}
