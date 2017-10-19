@@ -1,0 +1,35 @@
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+	\node[place] (raw) {raw input};
+	\node[transitiontext] (p1) at ($(raw) + (0,-1.5)$) {Phase 1};
+	\node[place,anchor=east,minimum width=4cm] (data) at ($(p1) + (-0.5,-1.5)$) {problem data};
+	\node[place,anchor=west,minimum width=4cm] (afaces) at ($(p1) + (0.5,-1.5)$) {\afaces};
+	\node[transitiontext] (p2) at ($(p1) + (0,-3)$) {Phase 2};
+	\node[place,anchor=east,minimum width=4cm] (action) at ($(p2) + (-0.5,-1.5)$) {group action};
+	\node[place,anchor=west,minimum width=4cm] (oc) at ($(p2) + (0.5,-1.5)$) {orbit cones};
+	\node[transitiontext] (p3) at ($(p2) + (0,-3)$) {Phase 3};
+	\node[place] (gc) at ($(p3) + (0,-1.5)$) {GIT cones};
+	
+	\node[transitiontext,anchor=west] (oc_output) at ($(oc.east) + (1,0)$) {output};
+	\node[transitiontext,anchor=west] (gc_output) at ($(oc_output.west) + (0,-3)$) {output};
+	
+	\path
+	(raw) edge [post] (p1)
+	(p1) edge [post] (data)
+	(p1) edge [post] (afaces)
+	(data) edge [dashed,post] (p2)
+	(afaces) edge [post] (p2)
+	(p2) edge [post] (action)
+	(p2) edge [post] (oc)
+	(action) edge [post] (p3)
+	(oc) edge [dashed,post] (p3)
+	(data) edge [out=-135,in=90,dashed] ($(action.west)+(-0.5,0)$)
+	($(action.west)+(-0.5,0)$) edge [out=-90,in=180,dashed,post] (p3)
+	(p3) edge [post] (gc)
+	(oc) edge [dashed,post] (oc_output)
+	(gc) edge [dashed,post] (gc_output);
+	\end{tikzpicture}
+	\caption{The data flow of algorithm~\ref{algorithm:main} modelled as a Petri net with collapsed phases.}
+	\label{net:algorithm_overview}
+\end{figure}

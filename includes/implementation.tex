@@ -1,6 +1,6 @@
 \chapter{Implementation}
 
-In the following we present the implementation of the algorithm discussed in the previous chapter. In contrast to the existing \singular{} implementation \emph{gitfan.lib} \cite{gitfan}, which forms the foundation of our work, the approach described here utilises high performance computing methods in order to speed up the execution by running the algorithm on any number of machines simultaneously. Naturally, one has to identify independent components permitting concurrent execution on the one hand and inherent sequential processes on the other hand. As the sequential parts of the algorithm mostly agree with \emph{gitfan.lib} -- only signatures have been modified, providing an appropriate interface for the superordinate parallel environment -- we skip a detailed discussion of those and refer the interested reader to \cite{gitfan}. The chapter is structured as follows: First, we discuss the employed parallelisation framework \gpispace{} developed by the \ac{Fraunhofer ITWM} and follow up with the integration of singular code into \gpispace{} applications. Next, a parallel design of algorithm \todo{(ref needed to main algorithm in previous chapter)} is presented. A separate section covers approaches for managing found GIT cones, a potential bottleneck due to data dependencies. Finally, we describe input and output formats, additional features such as speeding up the execution by precomputed results and executed software tests in order to verify the functional correctness of the program.
+In the following we present the implementation of the algorithm discussed in the previous chapter. In contrast to the existing \singular{} implementation \emph{gitfan.lib} \cite{gitfan}, which forms the foundation of our work, the approach described here utilises high performance computing methods in order to speed up the execution by running the algorithm on any number of machines simultaneously. Naturally, one has to identify independent components permitting concurrent execution on the one hand and inherent sequential processes on the other hand. As the sequential parts of the algorithm mostly agree with \emph{gitfan.lib} -- only signatures have been modified, providing an appropriate interface for the superordinate parallel environment -- we skip a detailed discussion of those and refer the interested reader to \cite{gitfan}. The chapter is structured as follows: First, we discuss the employed parallelisation framework \gpispace{} developed by the \ac{Fraunhofer ITWM} and follow up with the integration of singular code into \gpispace{} applications. Next, a parallel design of algorithm~\ref{algorithm:main} is presented. A separate section covers approaches for managing found GIT cones, a potential bottleneck due to data dependencies. Finally, we describe input and output formats, additional features such as speeding up the execution by precomputed results and executed software tests in order to verify the functional correctness of the program.
 
 \section{\gpispace}
 
@@ -83,6 +83,21 @@ Not being able to reset the \singular{} instance also makes writing decoupled te
 When \gpispace{} has to share \singular{} data between module calls without knowing the internal structure of the data, this can be achieved by serialising the data into \acp{BLOB} which then are managed by the \ac{WE}. \singular{} supports the serialization of its common data types by using \emph{ssi file links}. As the name suggests, the serialization string always is written to a file. It would be desirable to also obtain a serialization string in memory without the overhead of using virtual files or reading the created ssi files. Currently, we pass metadata (that is file paths) pointing to ssi files in a shared directory instead of acquiring and passing \acp{BLOB}.
 
 \section{Application flow \& Concurrency}
+
+We differentiate between three phases when implementing the algorithm described in chapter~\ref{chap:algorithm}. During the first phase, preprocessing of the input data and the identification of all orbits of \afaces with full dimensional image takes place. The second phase covers the computation of the orbit cones and the group action of symmetries on GIT cones. This data is mandatory when determining the GIT fan in the third phase by traversing all maximal cones of the fan. Figure~\ref{net:algorithm_overview} depicts the simplified data flow of the algorithm in which each phase is collapsed into a single transition. Dashed arcs indicate read-only connections, that is data values of tokens in the source place are passed to the target transition without consuming them when it fires. Hence, \emph{read-only} connections give access to static data computed once (such as processed input data), without discarding it due to consumption.
+
+\input{graphics/petri_net_algorithm_overview}
+
+\subsection*{Phase 1: Preprocessing, \afaces}
+
+%the input data is preprocessed by extracting the dimension parameters of the problem, computing the moving cone if necessary and 
+
+\subsection*{Phase 2: Orbit cones, group action on GIT cones}
+
+\subsection*{Phase 3: GIT fan traversal}
+
+
+
 
 \section{GIT cone data structure}
 

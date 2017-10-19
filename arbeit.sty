@@ -39,12 +39,17 @@
 \usepackage{makeidx}
 \makeindex
 
+% Schusterjungen/Hurenkinder vermeiden
+\clubpenalty = 10000 
+\widowpenalty = 10000
+
 %% Fix figure labeling
 \counterwithout{figure}{chapter}
 
 %% Set tikz styles for rendering petri nets
-\tikzstyle{place}=[circle,thick,draw,fill=black!10,minimum size=7mm]
+\tikzstyle{place}=[ellipse,thick,draw,fill=black!5,minimum size=7mm]
 \tikzstyle{transition}=[rectangle,thick,draw,fill=black,inner sep=0.7mm,minimum height=7mm]
+\tikzstyle{transitiontext}=[rectangle,thick,draw,line width=0.7mm,minimum height=7mm]
 \tikzstyle{every picture}+=[auto]
 \tikzstyle{every picture}+=[bend angle=20]
 \tikzstyle{every picture}+=[node distance=1.3cm]
