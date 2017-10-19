@@ -45,7 +45,7 @@ In order to control the data flow, each transition may be tagged with a predicat
 
 \subsection*{Expressions}
 
-\gpispace{} supports two kinds of transitions. The first kind triggers a module call whenever firing, executing arbitrary \cplusplus-code where the input and output tokens are mapped to references. The module call is packaged as a job and scheduled by the \ac{DRTS}. A lightweight approach that requires no scheduling is given by the second kind of transition. The expression language provided by \gpispace{} allows to specify the output data values of a transition by means of simple operations on the input data values. This extension is intended to be used for minor computations and saves the overhead of generating and scheduling a job by executing the expression directly within the \ac{WE}. For instance, counting consumed tokens may be realised that way, see figure~\ref{net:sample_expression}. If the counting would be realised with \cplusplus, each increment will cause a disproportionate communication and scheduling overhead.
+\gpispace{} supports two kinds of transitions. The first kind triggers a module call whenever firing, executing arbitrary \cplusplus code where the input and output tokens are mapped to references. The module call is packaged as a job and scheduled by the \ac{DRTS}. A lightweight approach that requires no scheduling is given by the second kind of transition. The expression language provided by \gpispace{} allows to specify the output data values of a transition by means of simple operations on the input data values. This extension is intended to be used for minor computations and saves the overhead of generating and scheduling a job by executing the expression directly within the \ac{WE}. For instance, counting consumed tokens may be realised that way, see figure~\ref{net:sample_expression}. If the counting would be realised with \cplusplus, each increment will cause a disproportionate communication and scheduling overhead.
 
 \input{graphics/petri_net_sample_expression}
 
@@ -62,7 +62,25 @@ The \ac{WE} itself is executed on a single node of the underlying system. Hence,
 \gpispace{} assumes that module calls have no side effects. Thus, when implementing the execution code for the transitions, possible racing conditions and concurrency issues have to be considered properly. Furthermore, each worker managed by the \ac{DRTS} is executed in its own process, but beyond that, jobs assigned to the same worker run in the same environment. For this reason jobs are influenced by changes of global state by prior executions. This behaviour causes several issues when integrating \singular{}, which is implemented as a large, global state machine.
 
 \section{Integration of Singular}
-drawbacks
+\singular{} is a computer algebra system for polynomial computations, with special emphasis on commutative and non\hbox{-}commutative, algebraic geometry and singularity theory \cite{singular}. Typically, algorithms utilising \singular{} are written in its own \c\hbox{-}like programming language, which is interpreted at runtime. Besides providing a console frontend for code execution, \singular{} also comes with the \c{} library \libsingular{} that implements its full backend. In particular, \c{} methods for interpreting and executing \singular{} code are available. \libsingular{} also exposes the internal data structures used by \singular{}, so that one can write conversion methods between \singular{} types and user defined types, i.e. \gpispace{} types.
+
+Since module calls in \gpispace{} permit the execution of arbitrary \cplusplus{} code, every legacy application with a \c{} interface such as \singular{} can easily be integrated and executed. In order to execute \singular{} code in a module call, one has to perform the following steps:
+\begin{enumerate}
+	\item Check if a \singular{} instance is already running on the current worker. If not, initialise \singular{}.
+	\item Convert \gpispace{} types to \singular{} types.
+	\item Map the converted data to identifiers in order to address it by \singular{} code.
+	\item Formulate a \c{} string containing the \singular{} code to be executed and pass it to the \singular{} interpreter via \libsingular{}. Note that instead of hard coding large blocks of code, it is reasonable to outsource them into a \singular{} library. Then, this step reduces to loading the library and invoking a single method.
+	\item Extract the data mapped to all identifiers that contain results of the computation.
+	\item Convert the extracted \singular{} types to \gpispace{} types that can be attached to tokens.
+\end{enumerate}
+
+\subsection*{Drawback: Global state}
+Although integrating \singular{} code is sufficiently easy, the approach described above suffers from a serious issue that originates from \singular{} heavily relying on global state. For instance, loaded libraries, declared variables and the current basering are managed in global data structures. If module calls are supposed to have no side effects, all changes concerning global state have to be reverted before returning from them. Unfortunately, \libsingular{} lacks the feature of creating and restoring images of its global state. In fact, there seems to be no way of resetting \singular{} to its initial state short of killing the current process, which -- obviously -- is not desirable.
+
+Not being able to reset the \singular{} instance also makes writing decoupled test cases more problematic. In order to avoid tests being influenced by one another due to global \singular{} state, each test has to be executed in a separate process. Unfortunately, this prevents the utilisation of many \gtest{} features such as bundling test cases, reusing data configurations and parametrising tests.
+
+\subsection*{Drawback: No in memory serialization of \singular{} types}
+When \gpispace{} has to share \singular{} data between module calls without knowing the internal structure of the data, this can be achieved by serialising the data into \acp{BLOB} which then are managed by the \ac{WE}. \singular{} supports the serialization of its common data types by using \emph{ssi file links}. As the name suggests, the serialization string always is written to a file. It would be desirable to also obtain a serialization string in memory without the overhead of using virtual files or reading the created ssi files. Currently, we pass metadata (that is file paths) pointing to ssi files in a shared directory instead of acquiring and passing \acp{BLOB}.
 
 \section{Application flow \& Concurrency}
 
