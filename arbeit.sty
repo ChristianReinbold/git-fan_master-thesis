@@ -35,6 +35,7 @@
 \usepackage{enumitem}			%for non-italic roman number in enumerations (label={\upshape(\roman*)})
 \usepackage{etoolbox}									% Enables toggle-commands, AtBeginEnvironment etc.
 \usepackage{adjustbox}
+\usepackage[shortcuts]{extdash}			% Enables protected dashes by using \=/
 
 \usepackage{makeidx}
 \makeindex
@@ -48,6 +49,7 @@
 
 %% Set tikz styles for rendering petri nets
 \tikzstyle{place}=[ellipse,thick,draw,fill=black!5,minimum size=7mm]
+\tikzstyle{placehighlight}=[place,fill=red!20]
 \tikzstyle{transition}=[rectangle,thick,draw,fill=black,inner sep=0.7mm,minimum height=7mm]
 \tikzstyle{transitiontext}=[rectangle,thick,draw,line width=0.7mm,minimum height=7mm]
 \tikzstyle{every picture}+=[auto]

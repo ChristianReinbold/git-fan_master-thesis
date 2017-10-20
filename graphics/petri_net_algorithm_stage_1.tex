@@ -1,0 +1,34 @@
+\begin{figure}[t]
+	\centering
+	\begin{tikzpicture}
+	\node[placehighlight] (raw) {raw input};
+	\node[transitiontext,anchor=west] (preprocess) at ($(raw.east) + (2,0)$) {preprocess};
+	\node[placehighlight] (data) at ($(preprocess) + (0,-1.5)$) {problem data};
+	\node[transitiontext] (partition) at ($(data) + (0,-1.5)$) {partition};
+	\node[place,anchor=east] (partitioner-state) at ($(partition.west) + (-1,0)$) {partitioner-state (ps)};
+	\node[place] (faces) at ($(partition) + (0,-1.5)$) {faces-subset};
+	\node[transitiontext] (select) at ($(faces) + (0,-1.5)$) {select \afaces};
+	\node[place] (afaces)  at ($(select) + (0,-1.5)$) {\afaces-subset};
+	\node[transitiontext] (merge)  at ($(afaces) + (0,-1.5)$) {merge};
+	\node[placehighlight,anchor=west] (all-afaces)  at ($(merge.east) + (2,0)$) {\afaces};
+	
+	\node[anchor=west] at ($(partition.east) + (0.1,0)$) {$\gpiresolve{\text{ps.finished}}$};
+	\node[anchor=north,draw] at ($(merge.south) + (0,-0.25)$) {$\gpiresolve{\text{\afaces}} \defeq \texttt{stack\_join}(\gpiresolve{\text{\afaces}}, \gpiresolve{\text{\afaces-subset}})$};
+	
+	\path
+	(raw) edge [post] (preprocess)
+	(preprocess) edge [post] (data)
+	(data) edge [dashed,post] (partition)
+	(data) edge [out=0,in=0,looseness=2,dashed,post] (select)
+	(partition) edge [bend right,post] (partitioner-state)
+	(partitioner-state) edge [bend right,post] (partition)
+	(partition) edge [post] (faces)
+	(faces) edge [post] (select)
+	(select) edge [post] (afaces)
+	(afaces) edge [post] (merge)
+	(merge) edge [bend left,post] (all-afaces)
+	(all-afaces) edge [bend left,post] (merge);
+	\end{tikzpicture}
+	\caption{Stage 1 of the algorithm. After preprocessing the input and partitioning all faces, each part is reduced and merged into a single token. Highlighted places correspond to places in figure~\ref{net:algorithm_overview}.}
+	\label{net:algorithm_stage_1}
+\end{figure}
