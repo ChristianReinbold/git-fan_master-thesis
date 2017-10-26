@@ -1,6 +1,6 @@
 \chapter{Implementation}
 
-In the following we present the implementation of the algorithm discussed in the previous chapter. In contrast to the existing \singular{} implementation \emph{gitfan.lib} \cite{gitfan}, which forms the foundation of our work, the approach described here utilises high performance computing methods in order to speed up the execution by running the algorithm on any number of machines simultaneously. Naturally, one has to identify independent components permitting concurrent execution on the one hand and inherent sequential processes on the other hand. As the sequential parts of the algorithm mostly agree with \emph{gitfan.lib} -- only signatures have been modified, providing an appropriate interface for the superordinate parallel environment -- we skip a detailed discussion of those and refer the interested reader to \cite{gitfan}. The chapter is structured as follows: First, we discuss the employed parallelisation framework \gpispace{} developed by the \ac{Fraunhofer ITWM} and follow up with the integration of singular code into \gpispace{} applications. Next, a parallel design of algorithm~\ref{algorithm:main} is presented. A separate section covers approaches for managing found GIT cones, a potential bottleneck due to data dependencies. Finally, we describe input and output formats, additional features such as speeding up the execution by precomputed results and executed software tests in order to verify the functional correctness of the program.
+In the following we present the implementation of the algorithm discussed in the previous chapter. In contrast to the existing \singular{} implementation \gitfanlib{} \cite{gitfan}, which forms the foundation of our work, the approach described here utilises high performance computing methods in order to speed up the execution by running the algorithm on any number of machines simultaneously. Naturally, one has to identify independent components permitting concurrent execution on the one hand and inherent sequential processes on the other hand. As the sequential components of the algorithm mostly agree with \gitfanlib{}, we discuss reworked parts only and skip the remaining ones, referring the interested reader to \cite{gitfan}. The chapter is structured as follows: First, we discuss the employed parallelisation framework \gpispace{} developed by the \ac{Fraunhofer ITWM} and follow up with the integration of singular code into \gpispace{} applications. After covering the encoding and managing of found GIT cones we present a parallel design of algorithm~\ref{algorithm:main}. Finally, we describe input and output formats, additional features such as speeding up the execution by precomputed results and executed software tests in order to verify the functional correctness of the program.
 
 \section{\gpispace}
 
@@ -82,37 +82,59 @@ Not being able to reset the \singular{} instance also makes writing decoupled te
 \subsection*{Drawback: No in memory serialization of \singular{} types}
 When \gpispace{} has to share \singular{} data between module calls without knowing the internal structure of the data, this can be achieved by serialising the data into \acp{BLOB} which then are managed by the \ac{WE}. \singular{} supports the serialization of its common data types by using \emph{ssi file links}. As the name suggests, the serialization string always is written to a file. It would be desirable to also obtain a serialization string in memory without the overhead of using virtual files or reading the created ssi files. Currently, we pass metadata (that is file paths) pointing to ssi files in a shared directory instead of acquiring and passing \acp{BLOB}.
 
+\subsection*{Drawback: \singular{} programming language lacking data structure implementations}
+Since the purpose of developing a parallel implementation of algorithm~\ref{algorithm:main} is the computation of large examples within a reasonable timeframe, it is crucial to choose optimal data structures for large sets of data. Unfortunately, the \singular{} programming language lacks tree\=/like data structures with $\mathcal{O}(n)$ characteristics and, more importantly, hash tables with average time complexity of $\mathcal{O}(1)$ for insertion, searching and deletion. For this reason, all tasks dealing with the detection of duplicates, were moved from \singular{} into the \cplusplus{} environment, where the \ac{STL} provides all necessary data structure implementations. Hence, the set of found GIT cones is managed in \cplusplus{}. The elimination of duplicates in orbit computations as well as the computation of the symmetry group action on GIT cones have been reworked in \cplusplus{}, resulting in a substantial performance gain compared to the \gitfanlib{} implementation.
+
+
+\section{GIT cone data structure}
+a potential bottleneck due to data dependencies
+
 \section{Application flow \& Concurrency}
 
-We differentiate between three stages when implementing the algorithm described in chapter~\ref{chap:algorithm}. During the first stage, preprocessing of the input data and the identification of all orbits of \afaces with full dimensional image takes place. The second stage covers the computation of the orbit cones and the group action of symmetries on GIT cones. This data is mandatory when determining the GIT fan in the third stage by traversing all maximal cones of the fan. Figure~\ref{net:algorithm_overview} depicts the simplified data flow of the algorithm in which each stage is collapsed into a single transition. Dashed arcs indicate read-only connections, that is data values of tokens in the source place are passed to the target transition without consuming them when it fires. Hence, \emph{read-only} connections give access to static data computed once (such as processed input data), without discarding it due to consumption.
+We differentiate between three stages when implementing the algorithm described in chapter~\ref{chap:algorithm}. During the first stage, preprocessing of the input data and the identification of all orbits of \afaces{} with full dimensional image takes place. The second stage covers the computation of the orbit cones and the symmetry group action on GIT cone\=/hashes. This data is mandatory when determining the GIT fan in the third stage by traversing all maximal cones of the fan. Figure~\ref{net:algorithm_overview} depicts the simplified data flow of the algorithm in which each stage is collapsed into a single transition. Dashed arcs indicate read-only connections, that is data values of tokens in the source place are passed to the target transition without consuming them when it fires. Hence, \emph{read-only} connections give access to static data computed once (such as processed input data), without discarding it due to consumption.
 
 \input{graphics/petri_net_algorithm_overview}
 
-We reuse the notation from chapter~\ref{chap:algorithm}. Recall that the matrix $Q\in\field^{k\times r}$ with columns $q_1,\dots,q_r$ decodes a torus action on the affine variety $X = V(\ideal)\subseteq \field^r$ where $\ideal\subseteq \field[x_1,\dots,x_r]$ is a homogeneous ideal with respect to the grading $\deg(x_i) = q_i$, $1\leq i\leq r$. The positive orthant $\mathbb{Q}_{\geq 0}^r$ is denoted by $\gamma$.
+We reuse the notation from chapter~\ref{chap:algorithm}. Recall that the matrix $Q\in\field^{k\times r}$ with columns $q_1,\dots,q_r$ decodes a torus action on the affine variety $X = V(\ideal)\subseteq \field^r$ where $\ideal\subseteq \field[x_1,\dots,x_r]$ is a homogeneous ideal with respect to the grading $\deg(x_i) = q_i$, $1\leq i\leq r$. The positive orthant $\mathbb{Q}_{\geq 0}^r$ is denoted by $\gamma$. Furthermore, $\mathcal{S}$ (possibly trivial) denotes a symmetry group of the action of $Q$ on $X$. \todo{Notation mit Kap. 3 prüfen}
 
 \subsection*{Stage 1: Preprocessing, \afaces}
 Stage 1 starts with preprocessing the raw input supplied by the user. During the process, we compute the following objects sequentially:
 \begin{itemize}
 	\item The amount $r$ of variables occurring in the basering and the dimension $k$ of the ambient space in which the GIT fan lives. Both values are extracted from the matrix describing the torus action.
 	\item the moving cone (optionally, see section~\ref{sec:additional_features})
-	\item orbit representatives for the faces of the simplex $\gamma$ under the symmetry group action in case it is provided without simultaneously providing a set of precomputed orbit representatives (see section~\ref{sec:additional_features}).
+	\item orbit representatives for the faces of the simplex $\gamma$ under the symmetry group $\mathcal{S}$ in case it is nontrivial and no set of precomputed orbit representatives is provided (see section~\ref{sec:additional_features}).
 \end{itemize}
 
-In a next step, the set of either orbit representatives or faces of the simplex $\gamma$, depending on whether a symmetry group action is provided, is partitioned into parts of equal size. A token is generated for every part, which then is processed in parallel, selecting only the \afaces{} with full dimensional image under $Q$. Finally, the reduced parts are merged into a single token that then is passed to the next stage. The Petri net modelling this process is depicted in figure~\ref{net:algorithm_stage_1}.
+In a next step, the set of orbit representatives for the faces of the simplex $\gamma$ is partitioned into parts of equal size. A token is generated for every part, which then is processed in parallel, selecting only the \afaces{} with full dimensional image under $Q$. Finally, the reduced parts are merged into a single token that then is passed to the next stage. The Petri net modelling this process is depicted in figure~\ref{net:algorithm_stage_1}.
 
 Since the [partition]\=/transition has to modify a state token which describes the faces assigned to a part already, it may execute sequentially only. This behaviour is enforced by adding the [partitioner\=/state]\=/place with a token describing the initial state of the partitioning process.
 The [\afaces]\=/place is initialised with a token containing an empty list. Since the [merge]\=/transition is synchronized via this token, it also may execute sequentially only. However, the computationally heavy task of identifying \afaces{} is represented by the [select \afaces{}]\=/transition, which is not synchronized. Therefore, any amount of faces may be processed simultaneously.
 
 \input{graphics/petri_net_algorithm_stage_1}
 
-\subsection*{Stage 2: Orbit cones, group action on GIT cones}
+\subsection*{Stage 2: Orbit cones, group action on GIT cone\=/hashes}
+After identifying a representative system for the \afaces{} with full dimensional image, we are able to determine all full dimensional orbit cones by taking the image under $Q$ and computing orbits under the symmetry group $\mathcal{S}$ acting on $Q(\gamma)$. The following steps are performed in successive order:
+
+\begin{enumerate}
+	\item Compute the cones $Q(\gamma_0)$ for all \afaces{} $\gamma_0$ returned by stage 1. These images contain a representative system for the set of full dimensional orbit cones $\Omega_\mathfrak{a}^{(k)}$. \todo{Notation bzgl. Kapitel 3 anpassen + Verweis auf Beweis der Aussage}
+	\item Optionally (see section~\ref{sec:additional_features}): Intersect all obtained cones with the moving cone. Since the moving cone is invariant under the symmetry group $\mathcal{S}$ \todo{Referenz}, the resulting cones contain a representative system for $\Omega_\mathfrak{a}^{(k)}$ intersected with the moving cone.
+	\item For each obtained cone $\sigma$: Compute the finite orbit $\mathcal{S}\sigma$. Since $\mathcal{S}$ acts on $\mathcal{S}\sigma$, each group element in $\mathcal{S}$ yields a uniquely identified permutation over $\mathcal{S}\sigma$, which we compute as well.
+	\item Eliminate duplicate orbits so that the remaining orbits form a partition of $\Omega_\mathfrak{a}^{(k)}$. \label{enum_item:eliminate_duplicate_orbits}
+	\item Aggregate all orbits into a single list containing $\Omega_\mathfrak{a}^{(k)}$. Utilise the previously determined permutations in order to construct the permutations over $\Omega_\mathfrak{a}^{(k)}$ that are induced by group elements of $\mathcal{S}$. Since GIT cones are encoded by bits indexed over $\Omega_\mathfrak{a}^{(k)}$, we obtain a group action of $\mathcal{S}$ on all GIT cone\=/hashes by simply permuting bits. This action is compatible with the group action of $\mathcal{S}$ on $Q(\gamma)$. \label{enum_item:aggregate_orbits}
+\end{enumerate}
+
+With the exception of step~\ref{enum_item:aggregate_orbits}, in all steps a prescribed operation has to be executed on each element of a list of either cones or orbits. Hence, we are able to parallelise the computations in each step by partitioning the list into equally sized parts as described for stage 1. Note that the elimination of duplicates in step~\ref{enum_item:eliminate_duplicate_orbits} translates to selecting all list entries such that no subsequent list entry equals the selected one.
+
+The most computationally intensive operation is performed in step 3. Every group element has to applied to the representative. Since the stabiliser subgroup may be nontrivial, we have to take care of possible duplicates. In order to do so, whenever a new cone is determined, the \gitfanlib{} implementation runs expensive comparisons with all previously found orbit elements and discards the cone if any matches are detected. We reworked the approach by
+exchanged the expensive comparison of cones with a string comparison of the cone's serialization, which is one to one for cones returned from \singular's \texttt{canonicalizeCone} routine. Furthermore, we manage the found cones in a hash table \todo{Referenz zu einer Hashtable-Einführung?}, using a hash function on the serialization string. Since the maximal orbit size is known to be the cardinality of $\mathcal{S}$, we can adjust the size of the hash table such that hash collisions are unlikely. Hence, the duplicate elimination comes for free by performing only one string comparison on average.
+
+The \gitfanlib{} implementation also compares cones in order to determine the action of $\mathcal{S}$ on the orbit. However, the action may be constructed from the cayley table of $\mathcal{S}$ as long it is known which group elements map to the same orbit element. For this reason we drop the cone comparisons and compute the action by composing permutations in $\mathcal{S}$, which is a very cheap operation scaling with the amount $r$ of variables occurring in the basering..
 
 \subsection*{Stage 3: GIT fan traversal}
 
 
 
 
-\section{GIT cone data structure}
 
 \section{Input \& Output structure}
 
