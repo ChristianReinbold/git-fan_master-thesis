@@ -1,6 +1,8 @@
 \chapter{Concept of the algorithm}
 \label{chap:algorithm}
 
+% Proposition: GIT cone is the intersection of all orbit cones containing it.
+
 % Reference to algorithm describing the whole application
 \label{algorithm:main}
 
@@ -8,4 +10,25 @@
 Monomial containment test
 Moving Cone
 \section{Traversing the GIT fan}
+
+%The traversal yields all nodes in this graph and thus a full description of the GIT fan. 
+
+\todo{Theorie aus Kapitel 4 übernehmen}
+
+\begin{algorithm}
+	\caption{Computing all neighbours of an GIT cone orbit}
+	\label{algo:git_cone_orbitneighbours}
+	
+	\KwIn{a GIT cone orbit $\O\in\faktor{\Lambda(\mathfrak{a},Q)(k)}{\mathcal{S}}$}
+	\KwOut{All GIT cone orbits $\O_\mathcal{N}\in\faktor{\Lambda(\mathfrak{a},Q)(k)}{\mathcal{S}}$ such that $\{\O, \O_\mathcal{N}\}\in E_\mathcal{S}$}
+	\BlankLine
+	$\mathcal{N} \leftarrow \emptyset$\;
+	Choose $\lambda$ such that $\O = \mathcal{S}\lambda$\;
+	\For{$\mu$ such that $\{\lambda,\mu\}\in E_{\langle e \rangle}$}{
+		$\mathcal{N}\leftarrow \mathcal{N} \cup \{\mathcal{S}\mu\}$\;
+	}
+	\Return $\mathcal{N}$\;
+\end{algorithm}	
+
+
 \section{Exploiting symmetry}
