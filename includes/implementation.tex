@@ -1,6 +1,6 @@
 \chapter{Implementation}
 
-In the following we present the implementation of the algorithm discussed in the previous chapter. In contrast to the existing \singular{} implementation \gitfanlib{} \cite{gitfan}, which forms the foundation of our work, the approach described here utilises high performance computing methods in order to speed up the execution by running the algorithm on any number of machines simultaneously. Naturally, one has to identify independent components permitting concurrent execution on the one hand and inherent sequential processes on the other hand. As the sequential components of the algorithm mostly agree with \gitfanlib{}, we discuss reworked parts only and skip the remaining ones, referring the interested reader to \cite{gitfan}. The chapter is structured as follows: First, we discuss the employed parallelisation framework \gpispace{} developed by the \ac{Fraunhofer ITWM} and follow up with the integration of singular code into \gpispace{} applications. After covering the encoding and managing of found GIT cones we present a parallel design of algorithm~\ref{algorithm:main}. Finally, we describe input and output formats, additional features such as speeding up the execution by precomputed results and executed software tests in order to verify the functional correctness of the program.
+In the following we present the implementation of the algorithm discussed in the previous chapter. In contrast to the existing \singular{} implementation \gitfanlib{} \cite{gitfan}, which forms the foundation of our work, the approach described here utilises high performance computing methods in order to speed up the execution by running the algorithm on any number of machines simultaneously. Naturally, one has to identify independent components permitting concurrent execution on the one hand and inherent sequential processes on the other hand. As the sequential components of the algorithm mostly agree with \gitfanlib{}, we discuss only reworked parts and skip the remaining ones, referring the interested reader to \cite{gitfan}. The chapter is structured as follows: First, we discuss the employed parallelisation framework \gpispace{} developed by the \ac{Fraunhofer ITWM} and follow up with the integration of singular code into \gpispace{} applications. After covering the encoding and managing of found GIT cones, we present a parallel design of algorithm~\ref{algorithm:main}. Finally, we describe input and output formats, additional features such as speeding up the execution by precomputed results, and executed software tests in order to verify the functional correctness of the program.
 
 \section{\gpispace}
 
@@ -87,6 +87,7 @@ Since the purpose of developing a parallel implementation of algorithm~\ref{algo
 
 
 \section{GIT cone data structure}
+\label{sec:git_cone_data_structure}
 a potential bottleneck due to data dependencies
 
 \section{Application flow \& Concurrency}
@@ -95,7 +96,7 @@ We differentiate between three stages when implementing the algorithm described 
 
 \input{graphics/petri_net_algorithm_overview}
 
-We reuse the notation from chapter~\ref{chap:algorithm}. Recall that the matrix $Q\in\field^{k\times r}$ with columns $q_1,\dots,q_r$ decodes a torus action on the affine variety $X = V(\ideal)\subseteq \field^r$ where $\ideal\subseteq \field[x_1,\dots,x_r]$ is a homogeneous ideal with respect to the grading $\deg(x_i) = q_i$, $1\leq i\leq r$. The positive orthant $\mathbb{Q}_{\geq 0}^r$ is denoted by $\gamma$. Furthermore, $\mathcal{S}$ (possibly trivial) denotes a symmetry group of the action of $Q$ on $X$. \todo{Notation mit Kap. 3 prüfen}
+We reuse the notation from chapter~\ref{chap:algorithm}. Recall that the matrix $Q\in\field^{k\times r}$ of rank $r$ with columns $q_1,\dots,q_r$ decodes a torus action on the affine variety $X = V(\ideal)\subseteq \field^r$ where $\ideal\subseteq \field[x_1,\dots,x_r]$ is a homogeneous ideal with respect to the grading $\deg(x_i) = q_i$, $1\leq i\leq r$. The positive orthant $\mathbb{Q}_{\geq 0}^r$ is denoted by $\gamma$. Furthermore, $\mathcal{S}$ (possibly trivial) denotes a symmetry group of the action of $Q$ on $X$. \todo{Notation mit Kap. 3 prüfen}
 
 \subsection*{Stage 1: Preprocessing, \afaces}
 Stage 1 starts with preprocessing the raw input supplied by the user. During the process, we compute the following objects sequentially:
@@ -125,14 +126,38 @@ After identifying a representative system for the \afaces{} with full dimensiona
 
 With the exception of step~\ref{enum_item:aggregate_orbits}, in all steps a prescribed operation has to be executed on each element of a list of either cones or orbits. Hence, we are able to parallelise the computations in each step by partitioning the list into equally sized parts as described for stage 1. Note that the elimination of duplicates in step~\ref{enum_item:eliminate_duplicate_orbits} translates to selecting all list entries such that no subsequent list entry equals the selected one.
 
-The most computationally intensive operation is performed in step 3. Every group element has to applied to the representative. Since the stabiliser subgroup may be nontrivial, we have to take care of possible duplicates. In order to do so, whenever a new cone is determined, the \gitfanlib{} implementation runs expensive comparisons with all previously found orbit elements and discards the cone if any matches are detected. We reworked the approach by
-exchanged the expensive comparison of cones with a string comparison of the cone's serialization, which is one to one for cones returned from \singular's \texttt{canonicalizeCone} routine. Furthermore, we manage the found cones in a hash table \todo{Referenz zu einer Hashtable-Einführung?}, using a hash function on the serialization string. Since the maximal orbit size is known to be the cardinality of $\mathcal{S}$, we can adjust the size of the hash table such that hash collisions are unlikely. Hence, the duplicate elimination comes for free by performing only one string comparison on average.
+The most computationally intensive operation is performed in step 3. Every group element is applied to the representative. Since the stabiliser subgroup may be nontrivial, we have to take care of possible duplicates. In order to do so, whenever a new cone is determined, the \gitfanlib{} implementation runs expensive comparisons with all previously found orbit elements and discards the cone if any matches are detected. We reworked the approach by
+exchanging the expensive comparison of cones with a string comparison of the cone's serialization, which is one to one for cones returned from \singular's \texttt{canonicalizeCone} routine. Furthermore, we manage the found cones in a hash table \todo{Referenz zu einer Hashtable-Einführung?}, using a hash function on the serialization string. Since the maximal orbit size is known to be the cardinality of $\mathcal{S}$, we can adjust the size of the hash table such that hash collisions are unlikely. Hence, the duplicate elimination comes for free by performing only one string comparison on average.
 
 The \gitfanlib{} implementation also compares cones in order to determine the action of $\mathcal{S}$ on the orbit. However, the action may be constructed from the cayley table of $\mathcal{S}$ as long it is known which group elements map to the same orbit element. For this reason we drop the cone comparisons and compute the action by composing permutations in $\mathcal{S}$, which is a very cheap operation scaling with the amount $r$ of variables occurring in the basering..
 
 \subsection*{Stage 3: GIT fan traversal}
 
+Now we are ready to determine the GIT fan. As described in chapter~\label{chap:algorithm}, this can be achieved by successively computing neighbours of full dimensional GIT cones. Note that the support of the GIT fan is convex, thus connected. From an algorithmic point of view, the GIT fan traversal translates to a graph traversal with the GIT cones being the nodes and the property of two GIT cones sharing a common facet being the edges. Formally, we consider the undirected, connected Graph $G_{\langle e \rangle}=(V_{\langle e \rangle},E_{\langle e \rangle})$ with
+\begin{align*}
+V_{\langle e \rangle} &\defeq \Lambda(\mathfrak{a},Q)(k),\\
+E_{\langle e \rangle} &\defeq \left\{\{\lambda_1, \lambda_2\} \mid \lambda_1, \lambda_2 \in \Lambda(\mathfrak{a},Q)(k) \text{ and }\lambda_1 \cap \lambda_2 \text{ is a facet of both }\lambda_1\text{ and }\lambda_2\right\}.
+\end{align*}
 
+Taking the symmetry group $\mathcal{S}$ into account, it suffices to traverse the graph $G_\mathcal{S} = (V_\mathcal{S}, E_\mathcal{S})$ with
+\begin{align*}
+V_\mathcal{S} &\defeq \faktor{\Lambda(\mathfrak{a},Q)(k)}{\mathcal{S}},\\
+E_\mathcal{S} &\defeq \left\{\{\mathcal{S}\lambda_1, \mathcal{S}\lambda_2\} \mid \lambda_1, \lambda_2 \in \Lambda(\mathfrak{a},Q)(k) \text{ and }\lambda_1 \cap \lambda_2 \text{ is a facet of both }\lambda_1\text{ and }\lambda_2\right\}.
+\end{align*}
+
+Due to \todo{Referenz aus Kap. 3!}, $G_\mathcal{S}$ is connected.
+
+In order to traverse any undirected, connected graph $G=(V,E)$, the following routines have to be provided:
+
+\begin{itemize}
+	\item A routine \texttt{START} that computes an initial node $v_0\in V$.
+	\item A routine \texttt{NEIGHBOURS} computing the function $\mathcal{N}\colon V \rightarrow \mathcal{P}(V)$ which lists all neighbours of a node $v$, that is $f(v) = \{w \mid \{v,w\}\in E\}$.
+	\item A routine \texttt{EQUALITY} for checking equality of two given nodes $v,w\in V$.
+\end{itemize}
+
+In order to encode a GIT cone orbit $\mathcal{O}$ in $V_\mathcal{S}$, we consider the GIT cone hashes as in section~\ref{sec:git_cone_data_structure} for all elements in $\mathcal{O}$ and select the lexicographically smallest one. Since this encoding is injective, \texttt{EQUALITY} is implemented by comparing bit strings. \texttt{START} is implemented as in \gitfanlib{}, that is selecting random points $p\in Q(\gamma)$ until the corresponding GIT cone $\lambda(p)$ \todo{Notation konsistent?} has full dimension. It remains to implement \texttt{NEIGHBOURS}.
+
+blubb
 
 
 
