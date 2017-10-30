@@ -1,0 +1,44 @@
+\begin{figure}[t]
+	\centering
+	\begin{tikzpicture}
+	\node[place,tokens=1] (init) {};
+	\node[transitiontext,anchor=west] (start) at ($(init.east) + (0.5,0)$) {\texttt{START}};
+	
+	\node[place,anchor=west] (neighbours) at ($(start.east) + (1,0)$) {neighbours};
+	\node[transitiontext] (expand) at ($(neighbours) + (0,1.5)$) {\texttt{NEIGHBOURS}};
+	\node[place] (frontier) at ($(expand) + (0,1.5)$) {frontier node};
+	\node[transitiontext] (insert) at ($(neighbours) + (0,-1.5)$) {insert};
+	
+	\node[transitiontext] (get) at ($(frontier) + (0,1.5)$) {get frontier node};
+	\node[place,anchor=west] (sync) at ($(expand.east) + (1.5,0)$) {enabled};
+	
+	\node[placehighlight] (data) at ($(start) + (0,1.5)$) {data};
+	
+	\node[databasehighlight,anchor=west] (storage) at ($(sync.east) + (1,0)$) {storage};
+	
+	\path
+	(init) edge [post] (start)
+	(start) edge [post] (neighbours)
+	(get) edge [post] (frontier)
+	(frontier) edge [post] (expand)
+	(expand) edge [post] (neighbours)
+	(neighbours) edge [post] (insert)
+	
+	(get) edge [post,out=-27,in=140] (sync)
+	(sync) edge [post, bend right] (get)
+	
+	(insert) edge [post,out=27,in=-140] (sync)
+	(sync) edge [post, bend left] (insert)
+	
+	(data) edge [dashed,post] (start)
+	(data) edge [dashed,post] (expand)
+		
+	(storage) edge [dashed,post,bend right] (get)
+	(insert) edge [dashed,post,bend right] (storage);
+	
+	\node at ($(get) + (0,0.7)$) {$\gpiresolve{\text{enabled}}$};
+	
+	\end{tikzpicture}
+	\caption{Modelling a graph traversal algorithm as a Petri net. Highlighted elements correspond to places in figure~\ref{net:algorithm_overview}.}
+	\label{net:algorithm_stage_3}
+\end{figure}

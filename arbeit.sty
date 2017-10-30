@@ -16,7 +16,7 @@
 \usepackage{blindtext}
 \usepackage{ifpdf}			% workaround for tikz auto-pst-pdf incompatibility		
 \ifpdf\usepackage{tikz}\fi  % https://tex.stackexchange.com/questions/166623/tikz-and-auto-pst-pdf-break-ghostscript
-\usetikzlibrary{automata,calc,arrows,shapes,petri, backgrounds}
+\usetikzlibrary{automata,calc,arrows,shapes,petri,backgrounds,shapes.geometric}
 \usepackage[crop=off]{auto-pst-pdf}				% compatibility package of pstricks for pdflatex.
 											    % Make sure to use the -shell-escape option
 \usepackage{pst-all}							% pstricks
@@ -52,6 +52,8 @@
 \tikzstyle{placehighlight}=[place,fill=red!20]
 \tikzstyle{transition}=[rectangle,thick,draw,fill=black,inner sep=0.7mm,minimum height=7mm]
 \tikzstyle{transitiontext}=[rectangle,thick,draw,line width=0.7mm,minimum height=7mm]
+\tikzstyle{database}=[thick,minimum width=2cm,minimum height=1cm,cylinder uses custom fill,cylinder body fill=yellow!50,cylinder end fill=yellow!50,cylinder,shape border rotate=90,aspect=0.25,draw]
+\tikzstyle{databasehighlight}=[database,cylinder body fill=red!20,cylinder end fill=red!20]
 \tikzstyle{every picture}+=[auto]
 \tikzstyle{every picture}+=[bend angle=20]
 \tikzstyle{every picture}+=[node distance=1.3cm]

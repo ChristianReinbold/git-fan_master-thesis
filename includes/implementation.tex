@@ -144,7 +144,7 @@ Stage 1 starts with preprocessing the raw input supplied by the user. During the
 In a next step, the set of orbit representatives for the faces of the simplex $\gamma$ is partitioned into parts of equal size. A token is generated for every part, which then is processed in parallel, selecting only the \afaces{} with full dimensional image under $Q$. Finally, the reduced parts are merged into a single token that then is passed to the next stage. The Petri net modelling this process is depicted in figure~\ref{net:algorithm_stage_1}.
 
 Since the [partition]\=/transition has to modify a state token which describes the faces assigned to a part already, it may execute sequentially only. This behaviour is enforced by adding the [partitioner\=/state]\=/place with a token describing the initial state of the partitioning process.
-The [\afaces]\=/place is initialised with a token containing an empty list. Since the [merge]\=/transition is synchronized via this token, it also may execute sequentially only. However, the computationally heavy task of identifying \afaces{} is represented by the [select \afaces{}]\=/transition, which is not synchronized. Therefore, any amount of faces may be processed simultaneously.
+The [\afaces]\=/place is initialised with a token containing an empty list. Since the [merge]\=/transition is synchronised via this token, it also may execute sequentially only. However, the computationally heavy task of identifying \afaces{} is represented by the [select \afaces{}]\=/transition, which is not synchronised. Therefore, any amount of faces may be processed simultaneously.
 
 \input{graphics/petri_net_algorithm_stage_1}
 
@@ -196,13 +196,46 @@ In order to traverse any undirected, connected graph $G=(V,E)$, the following ha
 
 In our case, we use the GIT cone orbit encoding described in section~\ref{sec:git_cone_management}. \texttt{START} is implemented as in \gitfanlib{}, that is selecting random points $p\in Q(\gamma)$ until the corresponding GIT cone $\lambda(p)$ \todo{Notation konsistent?} has full dimension. Then, \texttt{START} returns the GIT cone orbit\=/code of $\mathcal{S}\lambda(p)$. The routine \texttt{NEIGHBOURS} is given by algorithm~\ref{algo:git_cone_orbitneighbours}.
 
-It remains to model a Petri net describing a parallel graph traversal. Note that this model is applicable for any kind of fan traversals, e.g. in the context of tropical varieties \todo{Referenz von Janko}, as long as the above mentioned demands are satisfied. 
+It remains to model a Petri net describing a parallel graph traversal. Note that this model is applicable for any kind of fan traversal, e.g. in the context of tropical varieties \todo{Referenz von Janko}, as long as the above mentioned demands are satisfied. Figure~\ref{net:algorithm_stage_3} depicts an appropriate Petri net together with a storage interface that allows to record visited nodes outside of the \ac{WE}. The highlighted [data]\=/place combines the results of stage 2, which are required by the \texttt{START} and \texttt{NEIGHBOURS} routines for the GIT fan application.
 
+\input{graphics/petri_net_algorithm_stage_3}
 
+We distinguish between two types of nodes. \emph{Frontier nodes} are known by the traversal process. However, their neighbours have not been calculated yet. Hence, frontier nodes form the boundary of the ongoing graph traversal. The boundary is expanded by computing the neighbours of a frontier node, obtaining a set of frontier nodes. Nodes whose neighbours have been determined already are called \emph{expanded nodes}.
 
+The storage interface has to provide insertion and retrieval operations, which are used by the [get~frontier~node]- and [insert]\=/transition respectively. Whenever a node should be inserted, the storage implementation has to check if it is an unknown node, meaning that is does neither occur in the set of frontier nodes, nor in the set of expanded nodes. In this case the node is inserted into the set of frontier nodes. Otherwise, the node is discarded in order to avoid repeated expansion of the same node. A boolean return value denotes whether an insertion took place. The retrieval operation returns a frontier node and relocates it to the set of expanded nodes. If the set of frontier nodes is empty, no node is returned.
 
+The graph traversal is initiated by computing an initial node, executing \texttt{START}. The incoming place of \texttt{START} containing exactly one token ensures that the transition fires once only. The initial node is put into the [neighbours]\=/place so that it is published to the storage interface as the first frontier node when the [insert]\=/transition fires.
 
+[get~frontier~node] frequently polls the storage interface for frontier nodes and generates tokens for each returned node. It is synchronised via the [enabled]\=/place containing a single token, preventing simultaneous access to the storage implementation that may not be thread safe. As soon as the storage interface does not return any frontier node, [get~frontier~node] disables itself by setting the value of the [enabled]\=/token to \texttt{false}.
 
+The tokens representing frontier nodes are processed by computing adjacent nodes in [\texttt{NEIGHBOURS}]. Then, the results are inserted by invoking the storage interface. Note that the [insert]\=/transition also is synchronised via the [enabled]\=/place in order to prevent simultaneous access to the storage implementation. Whenever the storage interface indicates that at least one node has been inserted, the value of the [enabled]\=/token is set to \texttt{true}, reactivating [get~frontier~node].
+
+The traversal is finished when no frontier nodes are available anymore and no nodes are processed currently. These conditions are met when the Petri net described in figure~\ref{net:algorithm_stage_3} deadlocks. In our implementation, we extended the Petri net by detecting such deadlocks and outputting all nodes, i.e. GIT cone orbits, then.
+
+\section{Storage implementations used in graph traversals}
+
+In the previous section we described a parallel graph traversal algorithm in order to compute the GIT fan. This algorithm depends on a storage interface, which is accessed synchronously. On that account, it poses a potential performance issue, slowing down the computation up to a point where all but one process are blocked due to storage access. For this reason it is of utmost importance that the storage implementations is able to handle hundreds of requests during a single call to \texttt{NEIGHBOURS}. Furthermore, it has to cope with arbitrary large sets of nodes. We pursue two approaches, storing the nodes either in a shared directory on disk or in memory on a single node.
+
+\subsection{Storing nodes on disk}
+
+Our first approach stores nodes by exploiting the scalable cluster file system \beegfs{}, developed by the \ac{Fraunhofer ITWM} \cite{beegfs}. Every stored node is represented by an empty file with a path that depends on the binary representation of the node. Thus, searching for nodes is realised by the system call \texttt{fstat}, whereas insertions are realised with \texttt{touch}. This implementation offers the following advantages:
+
+\begin{itemize}
+	\item It is easy to implement since \beegfs{} already is installed on the cluster system of the \ac{Fraunhofer ITWM}. Mirroring the storage directory on every node of the cluster system is realised by \beegfs{} and hidden from the application.
+	\item Straightforward recovery in case of failures, e.g. power failures. The current state of the graph traversal is saved in persistent storage at any time.
+	\item Practically infinite scaling due to \beegfs{}.
+\end{itemize}
+
+However, load tests have shown that the response time by \beegfs{} are far too high, taking up over 90\% of the total computation time when computing the GIT fan of the \msix{} example on a moderate amount of 10 nodes with 16 cores each. For this reason we provide another, less scalable implementation with better response times that easily suffices the needs for computing the \msix{} example.
+
+\subsection{Storing nodes in memory}
+
+Instead of storing nodes on disk, we host an RPC\=/server on a single node of the cluster. This server implements the interface by managing the sets of frontier and expanded nodes in a hash table implementation provided by the \ac{STL}. Consequently, all nodes sent to the RPC-Server are stored in the RAM of a single node. Since insert and search operations perform in $\O(1)$ as long as enough memory 
+is available, this approach scales until a certain threshold is passed.
+
+In the \msix{} example we have to store up to 249\,604 entries of 106 bits each, summing up to about 3 MB of data. Thus, we are far away from reaching the limit of up\=/to\=/date RAM sizes. If one intends to run graph traversals consuming more memory than being available on a single node, the current storage solution may be extended by an implementation of distributed hash tables, utilising the RAM of every available node \todo{Referenz}.
+
+When considering response timings, the second approach performs significantly better than the implementation using \beegfs{}. Overhead induced by awaiting responses of the RPC\=/server is negligible even when executing the algorithm on 40 nodes with 16 cores each (see \todo{Forward-Referenz auf Performance-Kapitel}).
 
 \section{Input \& Output structure}
 
