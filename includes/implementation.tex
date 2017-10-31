@@ -307,3 +307,14 @@ A possible configuration of the storage implementation is given by the following
 The execution time of all module calls and the total program runtime are measured and stored in the directory given by the \texttt{logs} parameter of the embedded command line beginning with \texttt{+LOGGING} and terminating with \texttt{-LOGGING}. The application comes with a \texttt{generate\_statistics} binary that is able to process the stored records and generate statistics from it.
 
 \section{Software testing}
+
+Throughout the development of the application, we thoroughly implemented and maintained automated functional unit tests by using the \gtest{}\=/framework. We differentiate between three types of tests.
+
+\emph{Component tests} verify that the implementations of utility classes used in module calls display the correct behaviour. For instance, the storage implementations, logging classes, singular wrapper routines, type conversion routines and a LRU Cache implementation are automatically tested.
+
+\emph{Module call tests} check all module calls that occur in the modelled Petri nets. 
+Each test loads a set of valid sample data derived from the $\mathbb{G}(2,5)$ example (see section~\ref{sec:grassmanian_example}) and invokes a single module call, passing in the loaded data. Then the returned values are checked against the expected behaviour.
+
+\emph{System tests} execute the complete application or the Petri nets of each stage separately. The input data is derived from the $\mathbb{G}(2,5)$ example with a trivial symmetry group and a $\mathcal{S}_5$-symmetric group respectively. Furthermore, we check if the first two stages are skipped when supplying precomputed data as described in section~\ref{sec:additional_features}. The routines for verifying the returned results do not depend on the output order of the orbit cones and thus are not susceptible to indeterministic behaviour due to job scheduling.
+
+All input data sets and expected data sets have been computed by using the \gitfanlib{} implementation. Hence, in the $\mathbb{G}(2,5)$ test scenario our calculations comply with the results returned by \gitfanlib{}.
