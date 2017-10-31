@@ -29,6 +29,7 @@
 \def\gitfanlib		{\textsc{gitfan.lib}}
 \def\gpispace		{\textsc{GPI-Space}}
 \def\beegfs			{\textsc{BeeGFS}}
+\def\gap			{\textsc{GAP}}
 \def\cplusplus		{\textsc{C++}}
 \def\c				{\textsc{C}}
 \def\gtest			{\textsc{Google Test}}
@@ -64,14 +65,16 @@
 
 %% Block für Einschübe
 \definecolor{light-gray}{gray}{0.95}
-\newcommand{\Block}[1]{
-\vspace{2mm}\noindent
-\fcolorbox{black}{light-gray}{ \begin{minipage}[r]{0.97\textwidth}
+\newcommand{\Block}[2][0.95\textwidth]{
+\vspace{2mm}
+\begin{center}
+\fcolorbox{black}{light-gray}{ \begin{minipage}[r]{#1}
 		\setcounter{mpfootnote}{\value{footnote}}
 		\renewcommand{\thempfootnote}{\arabic{mpfootnote}}
 		
-		#1
+		#2
 		
 		\setcounter{footnote}{\value{mpfootnote}}
 	\end{minipage} }
+\end{center}
 }

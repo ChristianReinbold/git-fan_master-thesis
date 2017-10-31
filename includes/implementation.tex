@@ -80,7 +80,7 @@ Although integrating \singular{} code is sufficiently easy, the approach describ
 Not being able to reset the \singular{} instance also makes writing decoupled test cases more problematic. In order to avoid tests being influenced by one another due to global \singular{} state, each test has to be executed in a separate process. Unfortunately, this prevents the utilisation of many \gtest{} features such as bundling test cases, reusing data configurations and parametrising tests.
 
 \subsection*{Drawback: No in memory serialization of \singular{} types}
-When \gpispace{} has to share \singular{} data between module calls without knowing the internal structure of the data, this can be achieved by serialising the data into \acp{BLOB} which then are managed by the \ac{WE}. \singular{} supports the serialization of its common data types by using \emph{ssi file links}. As the name suggests, the serialization string always is written to a file. It would be desirable to also obtain a serialization string in memory without the overhead of using virtual files or reading the created ssi files. Currently, we pass metadata (that is file paths) pointing to ssi files in a shared directory instead of acquiring and passing \acp{BLOB}.
+When \gpispace{} has to share \singular{} data between module calls without knowing the internal structure of the data, this can be achieved by serialising the data into \acp{BLOB} which then are managed by the \ac{WE}. \singular{} supports the serialization of its common data types by using \emph{\ac{ssi} file links}. As the name suggests, the serialization string always is written to a file. It would be desirable to also obtain a serialization string in memory without the overhead of using virtual files or reading the created \ac{ssi} files. Currently, we pass metadata (that is file paths) pointing to \ac{ssi} files in a shared directory instead of acquiring and passing \acp{BLOB}.
 
 \subsection*{Drawback: \singular{} programming language lacking data structure implementations}
 Since the purpose of developing a parallel implementation of algorithm~\ref{algorithm:main} is the computation of large examples within a reasonable timeframe, it is crucial to choose optimal data structures for large sets of data. Unfortunately, the \singular{} programming language lacks tree\=/like data structures with $\mathcal{O}(n)$ characteristics and, more importantly, hash tables with average time complexity of $\mathcal{O}(1)$ for insertion, searching and deletion. For this reason, all tasks dealing with the detection of duplicates, were moved from \singular{} into the \cplusplus{} environment, where the \ac{STL} provides all necessary data structure implementations. Hence, the set of found GIT cones is managed in \cplusplus{}. The elimination of duplicates in orbit computations as well as the computation of the symmetry group action on GIT cones have been reworked in \cplusplus{}, resulting in a substantial performance gain compared to the \gitfanlib{} implementation.
@@ -213,6 +213,7 @@ The tokens representing frontier nodes are processed by computing adjacent nodes
 The traversal is finished when no frontier nodes are available anymore and no nodes are processed currently. These conditions are met when the Petri net described in figure~\ref{net:algorithm_stage_3} deadlocks. In our implementation, we extended the Petri net by detecting such deadlocks and outputting all nodes, i.e. GIT cone orbits, then.
 
 \section{Storage implementations used in graph traversals}
+\label{sec:storage_implementations}
 
 In the previous section we described a parallel graph traversal algorithm in order to compute the GIT fan. This algorithm depends on a storage interface, which is accessed synchronously. On that account, it poses a potential performance issue, slowing down the computation up to a point where all but one process are blocked due to storage access. For this reason it is of utmost importance that the storage implementations is able to handle hundreds of requests during a single call to \texttt{NEIGHBOURS}. Furthermore, it has to cope with arbitrary large sets of nodes. We pursue two approaches, storing the nodes either in a shared directory on disk or in memory on a single node.
 
@@ -239,8 +240,70 @@ When considering response timings, the second approach performs significantly be
 
 \section{Input \& Output structure}
 
+The application is controlled by various command line parameters. In particular, the user provides command line argument values specifying the input data and the output directory. In the following we describe all parameters concerning input and output:
+
+\begin{description}
+	\item[\texttt{ideal}:] The path to a file which contains the vanishing ideal $\mathfrak{a}$ in the \ac{ssi} format.
+	\item[\texttt{torus-action}:] The path to a file which contains the matrix $Q$ encoding the torus action in the \ac{ssi} format.
+	\item[\texttt{symmetry-group} (optional):] The path to a file which contains the symmetry group $S$ as a list of permutation\=/types as defined in \gitfanlib{}. The data has to be present in the \ac{ssi} format. If no path is supplied, the trivial group is assumed.
+	\item[\texttt{working-directory}:] A nonexistent directory which the application uses as working and output directory.
+\end{description}
+
+When the application terminates, the following files have been written to the working directory:
+
+\begin{description}
+	\item[\texttt{args}:] This file logs all command line argument values that have been passed to the application.
+	\item[\texttt{rev}:] This file contains the SHA1 git commit hash of the current build.
+	\item[\texttt{load\_git\_cones.sing}:] A singular script that may be piped into a singular instance in order to load all orbit and GIT cones into the variables \texttt{ORBIT\_CONES} and \texttt{GIT\_CONES}.
+	\item[\texttt{load\_git\_cones.lib}:] A helper library that is used by the previously mentioned script.
+\end{description}
+
+Furthermore, a subdirectory \texttt{result} is created, containing the following:
+
+\begin{description}
+	\item[\texttt{orbit\_cones}:] This subdirectory contains all orbit cones, written to files in the \ac{ssi} format, and the file \texttt{list}. Each line of \texttt{list} describes the file name for a single orbit cone and thus induces an order on the set of orbit cones. This order has been used when encoding GIT cones.
+	\item[\texttt{git\_cones}:] This file contains all full dimensional GIT cones encoded as bit strings (see section~\ref{sec:git_cone_management})). Groups of four bits are combined to a hex digit. The strings are separated by new lines.
+	\item[\texttt{symmetry\_group\_on\_hashes}:] This file contains the group action of $S$ on the GIT cone code words. Similarly to the \texttt{symmetry-group} parameter, the action is stored as a list of permutations on the set of orbit cones ordered by the \texttt{list} file.
+\end{description}
+
 \section{Additional features}
 \label{sec:additional_features}
-an Kommandozeilenparameter entlanghangeln
+
+The application is shipped with several additional features such as intersecting with the moving cone, incorporating precomputed data, computing only a predefined amount of GIT cones, clustering calculations, configuring the storage implementation and logging performance records. All features are accessible via command line arguments. An overview of all supported arguments is obtained by typing \texttt{-{}-help}.
+
+\subsection*{Intersecting with the moving cone}
+
+Instead of computing the GIT fan with support $Q(\lambda)$, the application may also compute the intersection of the GIT fan with the moving cone for $Q$. In order to do so, the user has to supply a file path for the optional command line argument \texttt{moving-cone}. If the path refers to a nonexistent file, the application computes the moving cone from $Q$ and outputs it to the given path. If the path refers to an existent file instead, the application assumes that the file contains the precomputed moving cone in the \ac{ssi} format and loads this file instead of computing the moving cone.
+
+\subsection*{Acceleration by using precomputed data}
+
+One cannot only supply a precomputed moving cone, but also a precomputed set of all orbit cones including the group action of $S$ on this set. Hence, the first two stages of the algorithm may be skipped. If a path for the optional command line argument \texttt{precomputed-orbit-cones} is supplied, the file associated to this path is assumed to contain a list of all orbit cones. Each line in this file has to describe a path, relative to the supplied path, that represents a file containing an orbit cone in the \ac{ssi} format. Note that the \texttt{symmetry-group} parameter is ignored in this case. Instead, the \texttt{precomputed-symmetry-group-on-hashes} parameter can be used in order to specify a precomputed group action of $S$ on the GIT cone code words. If no value is supplied, the trivial group action is assumed.
+
+Finally, the parameter \texttt{simplex-orbit-representatives} allows to provide the application with precomputed orbit representatives with respect to the group action of $S$ on the faces of $\gamma$. Each line constitutes a single representative by containing a comma separated list of integers. The integers define which of the rays $e_i$ generate the corresponding face. Although this parameter is optional, it is highly advised to determine the orbit representative with \gap{} \cite{gap} beforehand, since the current version of the application does not implement an efficient, parallelised approach for computing the representatives.
+
+\subsection*{Clustering calculations}
+
+In order to reduce the load on the \ac{WE}, one can modify the value of the \texttt{job-size} parameter, clustering more calculations into a single execution of a transition. As a downside, increasing this value may reduce the degree of parallelism if the amount of available cores exceeds the number of available jobs divided by the job size.
+
+\subsection*{Aborting the GIT fan traversal}
+
+The GIT fan traversal may be aborted after expanding a predefined amount of GIT cone orbits that is given by the \texttt{max-cones} parameter. On that account the third stage of the algorithm may be skipped by setting \texttt{max-cones} to zero. Negative values are considered to be infinity. This feature mainly has been used for debugging purposes.
+
+\subsection*{Selecting and configuring the storage implementation}
+
+We provide embedded command line arguments in order to select and configure the storage implementation used during the GIT fan traversal. All values for the following parameters have to be provided in a block starting with \texttt{+CONESTORAGE} and terminating with \texttt{-CONESTORAGE}.
+
+\begin{description}
+	\item[implementation:] Selects the utilised storage implementation (see section~\ref{sec:storage_implementations}). One of \texttt{rpc}, \texttt{linear} or \texttt{constant}. \texttt{rpc} refers to the in\=/memory solution. \texttt{linear} and \texttt{constant} refer to the \beegfs{} solution, where \texttt{linear} consumes less memory than \texttt{constant} but requires linear time in order to determine inserted nodes that are frontier nodes. If no value is specified, this parameter defaults to \texttt{rpc}.
+	\item[subdirectory-name-length:] This parameter modifies the depth of the resultant file tree created by the \beegfs{} solution. For every \texttt{subdirectory-name-length} characters in a GIT cone orbit code word, a new level is introduced.
+\end{description}
+
+A possible configuration of the storage implementation is given by the following command line:
+
+\Block[0.65\textwidth]{\texttt{+CONESTORAGE \mbox{-{}-implementation=constant} \mbox{ -{}-subdirectory-name-length=4} -CONESTORAGE}}
+
+\subsection*{Logging performance records}
+
+The execution time of all module calls and the total program runtime are measured and stored in the directory given by the \texttt{logs} parameter of the embedded command line beginning with \texttt{+LOGGING} and terminating with \texttt{-LOGGING}. The application comes with a \texttt{generate\_statistics} binary that is able to process the stored records and generate statistics from it.
 
 \section{Software testing}
