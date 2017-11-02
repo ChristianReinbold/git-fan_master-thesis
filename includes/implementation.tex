@@ -1,6 +1,6 @@
 \chapter{Implementation}
 
-In the following we present the implementation of the algorithm discussed in the previous chapter. In contrast to the existing \singular{} implementation \gitfanlib{} \cite{gitfanlib}, which forms the foundation of our work, the approach described here utilises high performance computing methods in order to speed up the execution by running the algorithm on any number of machines simultaneously. Naturally, one has to identify independent components permitting concurrent execution on the one hand and inherent sequential processes on the other hand. As the sequential components of the algorithm mostly agree with \gitfanlib{}, we discuss only reworked parts and skip the remaining ones, referring the interested reader to \cite{gitfanlib}. The chapter is structured as follows: First, we discuss the employed parallelisation framework \gpispace{} developed by the \ac{Fraunhofer ITWM} and follow up with the integration of singular code into \gpispace{} applications. After encoding GIT cone orbits, we present a parallel design of algorithm~\ref{algorithm:main} that is applicable for any kind of fan traversals. Finally, we describe input and output formats, additional features such as speeding up the execution by precomputed results, and executed software tests in order to verify the functional correctness of the program.
+In the following we present the implementation of the algorithm discussed in the previous chapter. In contrast to the existing \singular{} implementation \gitfanlib{} \cite{gitfanlib}, which forms the foundation of our work, the approach described here utilises high performance computing methods in order to speed up the execution by running the algorithm on any number of machines simultaneously. Naturally, one has to identify independent components permitting concurrent execution on the one hand and inherent sequential processes on the other hand. As the sequential components of the algorithm mostly agree with \gitfanlib{}, we discuss only reworked parts and skip the remaining ones, referring the interested reader to \cite{gitfanlib}. The chapter is structured as follows: First, we discuss the employed parallelisation framework \gpispace{} developed by the \ac{Fraunhofer ITWM} and follow up with the integration of singular code into \gpispace{} applications. After encoding GIT cone orbits, we present a parallel design of Algorithm~\ref{algorithm:main} that is applicable for any kind of fan traversals. Finally, we describe input and output formats, additional features such as speeding up the execution by precomputed results, and executed software tests in order to verify the functional correctness of the program.
 
 \section{\gpispace}
 
@@ -33,7 +33,7 @@ for all $p\in P$. We interpret this as follows: For every incoming arc $(p,t)$ f
 
 \input{graphics/petri_net_sample_concurrency}
 
-An important property of Petri nets is given by the fact that in many cases the same result is obtained if the order in which two transitions $t_1$ and $t_2$ fire is reversed. This allows the modelling of concurrent behaviour. When executing the Petri net model on a machine, the necessary steps for firing $t_1$ and $t_2$ respectively may be performed in parallel. Figure~\ref{net:sample_concurrency} depicts such a situation. Note that figure~\ref{net:sample} also shows an example for concurrent behaviour in which the transition may fire twice. However, the order in which the tokens in the left place are consumed is of no relevance. This example seems trivial as tokens located at the same place are indistinguishable. However, this is not the case anymore when attaching data to tokens. In fact, figure~\ref{net:sample} depicts the common scenario of concurrent behaviour in our algorithm, as parallel execution is mostly achieved by invoking the same routine for varying, independent input data.
+An important property of Petri nets is given by the fact that in many cases the same result is obtained if the order in which two transitions $t_1$ and $t_2$ fire is reversed. This allows the modelling of concurrent behaviour. When executing the Petri net model on a machine, the necessary steps for firing $t_1$ and $t_2$ respectively may be performed in parallel. Figure~\ref{net:sample_concurrency} depicts such a situation. Note that Figure~\ref{net:sample} also shows an example for concurrent behaviour in which the transition may fire twice. However, the order in which the tokens in the left place are consumed is of no relevance. This example seems trivial as tokens located at the same place are indistinguishable. However, this is not the case anymore when attaching data to tokens. In fact, Figure~\ref{net:sample} depicts the common scenario of concurrent behaviour in our algorithm, as parallel execution is mostly achieved by invoking the same routine for varying, independent input data.
 
 \subsection*{Coloured Petri nets and guards}
 
@@ -45,7 +45,7 @@ In order to control the data flow, each transition may be tagged with a predicat
 
 \subsection*{Expressions}
 
-\gpispace{} supports two kinds of transitions. The first kind triggers a module call whenever firing, executing arbitrary \cplusplus code where the input and output tokens are mapped to references. The module call is packaged as a job and scheduled by the \ac{DRTS}. A lightweight approach that requires no scheduling is given by the second kind of transition. The expression language provided by \gpispace{} allows to specify the output data values of a transition by means of simple operations on the input data values. This extension is intended to be used for minor computations and saves the overhead of generating and scheduling a job by executing the expression directly within the \ac{WE}. For instance, counting consumed tokens may be realised that way, see figure~\ref{net:sample_expression}. If the counting would be realised with \cplusplus, each increment will cause a disproportionate communication and scheduling overhead.
+\gpispace{} supports two kinds of transitions. The first kind triggers a module call whenever firing, executing arbitrary \cplusplus code where the input and output tokens are mapped to references. The module call is packaged as a job and scheduled by the \ac{DRTS}. A lightweight approach that requires no scheduling is given by the second kind of transition. The expression language provided by \gpispace{} allows to specify the output data values of a transition by means of simple operations on the input data values. This extension is intended to be used for minor computations and saves the overhead of generating and scheduling a job by executing the expression directly within the \ac{WE}. For instance, counting consumed tokens may be realised that way, see Figure~\ref{net:sample_expression}. If the counting would be realised with \cplusplus, each increment will cause a disproportionate communication and scheduling overhead.
 
 \input{graphics/petri_net_sample_expression}
 
@@ -83,7 +83,7 @@ Not being able to reset the \singular{} instance also makes writing decoupled te
 When \gpispace{} has to share \singular{} data between module calls without knowing the internal structure of the data, this can be achieved by serialising the data into \acp{BLOB} which then are managed by the \ac{WE}. \singular{} supports the serialization of its common data types by using \emph{\ac{ssi} file links}. As the name suggests, the serialization string always is written to a file. It would be desirable to also obtain a serialization string in memory without the overhead of using virtual files or reading the created \ac{ssi} files. Currently, we pass metadata (that is file paths) pointing to \ac{ssi} files in a shared directory instead of acquiring and passing \acp{BLOB}.
 
 \subsection*{Drawback: \singular{} programming language lacking data structure implementations}
-Since the purpose of developing a parallel implementation of algorithm~\ref{algorithm:main} is the computation of large examples within a reasonable timeframe, it is crucial to choose optimal data structures for large sets of data. Unfortunately, the \singular{} programming language lacks tree\=/like data structures with $\mathcal{O}(n)$ characteristics and, more importantly, hash tables with average time complexity of $\mathcal{O}(1)$ for insertion, searching and deletion. For this reason, all tasks dealing with the detection of duplicates, were moved from \singular{} into the \cplusplus{} environment, where the \ac{STL} provides all necessary data structure implementations. Hence, the set of found GIT cones is managed in \cplusplus{}. The elimination of duplicates in orbit computations as well as the computation of the symmetry group action on GIT cones have been reworked in \cplusplus{}, resulting in a substantial performance gain compared to the \gitfanlib{} implementation.
+Since the purpose of developing a parallel implementation of Algorithm~\ref{algorithm:main} is the computation of large examples within a reasonable timeframe, it is crucial to choose optimal data structures for large sets of data. Unfortunately, the \singular{} programming language lacks tree\=/like data structures with $\mathcal{O}(n)$ characteristics and, more importantly, hash tables with average time complexity of $\mathcal{O}(1)$ for insertion, searching and deletion. For this reason, all tasks dealing with the detection of duplicates, were moved from \singular{} into the \cplusplus{} environment, where the \ac{STL} provides all necessary data structure implementations. Hence, the set of found GIT cones is managed in \cplusplus{}. The elimination of duplicates in orbit computations as well as the computation of the symmetry group action on GIT cones have been reworked in \cplusplus{}, resulting in a substantial performance gain compared to the \gitfanlib{} implementation.
 
 
 \section{Encoding GIT cone orbits}
@@ -141,25 +141,25 @@ Stage 1 starts with preprocessing the raw input supplied by the user. During the
 	\item orbit representatives for the faces of the simplex $\gamma$ under the symmetry group $\mathcal{S}$ in case it is nontrivial and no set of precomputed orbit representatives is provided (see section~\ref{sec:additional_features}).
 \end{itemize}
 
-In a next step, the set of orbit representatives for the faces of the simplex $\gamma$ is partitioned into parts of equal size. A token is generated for every part, which then is processed in parallel, selecting only the \afaces{} with full dimensional image under $Q$. Finally, the reduced parts are merged into a single token that then is passed to the next stage. The Petri net modelling this process is depicted in figure~\ref{net:algorithm_stage_1}.
+In a next step, the set of orbit representatives for the faces of the simplex $\gamma$ is partitioned into parts of equal size. A token is generated for every part, which then is processed in parallel, selecting only the \afaces{} with full dimensional image under $Q$. Finally, the reduced parts are merged into a single token that then is passed to the next stage. The Petri net modelling this process is depicted in Figure~\ref{net:algorithm_stage_1}.
 
 Since the [partition]\=/transition has to modify a state token which describes the faces assigned to a part already, it may execute sequentially only. This behaviour is enforced by adding the [partitioner\=/state]\=/place with a token describing the initial state of the partitioning process.
 The [\afaces]\=/place is initialised with a token containing an empty list. Since the [merge]\=/transition is synchronised via this token, it also may execute sequentially only. However, the computationally heavy task of identifying \afaces{} is represented by the [select \afaces{}]\=/transition, which is not synchronised. Therefore, any amount of faces may be processed simultaneously.
 
 \input{graphics/petri_net_algorithm_stage_1}
 
-\subsection*{Stage 2: Orbit cones, group action on GIT cone\=/hashes}
+\subsection*{Stage 2: Orbit cones, group action on encoded GIT cones}
 After identifying a representative system for the \afaces{} with full dimensional image, we are able to determine all full dimensional orbit cones by taking the image under $Q$ and computing orbits under the symmetry group $\mathcal{S}$ acting on $Q(\gamma)$. The following steps are performed in successive order:
 
 \begin{enumerate}
 	\item Compute the cones $Q(\gamma_0)$ for all \afaces{} $\gamma_0$ returned by stage 1. These images contain a representative system for the set of full dimensional orbit cones $\Omega_\mathfrak{a}^{(k)}$. \todo{Notation bzgl. Kapitel 3 anpassen + Verweis auf Beweis der Aussage}
 	\item Optionally (see section~\ref{sec:additional_features}): Intersect all obtained cones with the moving cone. Since the moving cone is invariant under the symmetry group $\mathcal{S}$ \todo{Referenz}, the resulting cones contain a representative system for $\Omega_\mathfrak{a}^{(k)}$ intersected with the moving cone.
-	\item For each obtained cone $\sigma$: Compute the finite orbit $\mathcal{S}\sigma$ and the group action of $\mathcal{S}$ on $\mathcal{S}\sigma$.
+	\item For each obtained cone $\sigma$: Compute the finite orbit $\mathcal{S}\sigma$ and the group action of $\mathcal{S}$ on $\mathcal{S}\sigma$. \label{enum_item:compute_orbit_cone_orbits}
 	\item Eliminate duplicate orbits so that the remaining orbits form a partition of $\Omega_\mathfrak{a}^{(k)}$. \label{enum_item:eliminate_duplicate_orbits}
 	\item Aggregate all orbits into a single list containing $\Omega_\mathfrak{a}^{(k)}$. Utilise the previously determined group actions on the orbits in order to construct the group action of $\mathcal{S}$ on $\Omega_\mathfrak{a}^{(k)}$. \label{enum_item:aggregate_orbits}
 \end{enumerate}
 
-With the exception of step~\ref{enum_item:aggregate_orbits}, in all steps a prescribed operation has to be executed on each element of a list of either cones or orbits. Hence, we are able to parallelise the computations in each step by partitioning the list into equally sized parts as described for stage 1. Note that the elimination of duplicates in step~\ref{enum_item:eliminate_duplicate_orbits} translates to selecting all list entries such that no subsequent list entry equals the selected one.
+With the exception of Step~\ref{enum_item:aggregate_orbits}, in all steps a prescribed operation has to be executed on each element of a list of either cones or orbits. Hence, we are able to parallelise the computations in each step by partitioning the list into equally sized parts as described for stage 1. Note that the elimination of duplicates in Step~\ref{enum_item:eliminate_duplicate_orbits} translates to selecting all list entries such that no subsequent list entry equals the selected one.
 
 The most computationally intensive operation is performed in step 3. Every group element is applied to the representative. Since the stabiliser subgroup may be nontrivial, we have to take care of possible duplicates. In order to do so, whenever a new cone is determined, the \gitfanlib{} implementation runs expensive comparisons with all previously found orbit elements and discards the cone if any matches are detected. We reworked the approach by
 exchanging the expensive comparison of cones with a string comparison of the cone's serialization, which is one to one for cones returned from \singular's \texttt{canonicalizeCone} routine. Furthermore, we manage the found cones in a hash table \todo{Referenz zu einer Hashtable-Einführung?}, using a hash function on the serialization string. Since the maximal orbit size is known to be the cardinality of $\mathcal{S}$, we can adjust the size of the hash table such that hash collisions are unlikely. Hence, the duplicate elimination comes for free by performing only one string comparison on average.
@@ -194,7 +194,7 @@ In order to traverse any undirected, connected graph $G=(V,E)$, the following ha
 	\item A routine \texttt{NEIGHBOURS} computing the function $\mathcal{N}\colon V \rightarrow \mathcal{P}(V)$ which lists all neighbours of a node $v$, that is $f(v) = \{w \mid \{v,w\}\in E\}$.
 \end{itemize}
 
-In our case, we use the GIT cone orbit encoding described in section~\ref{sec:git_cone_management}. \texttt{START} is implemented as in \gitfanlib{}, that is selecting random points $p\in Q(\gamma)$ until the corresponding GIT cone $\lambda(p)$ \todo{Notation konsistent?} has full dimension. Then, \texttt{START} returns the GIT cone orbit\=/code of $\mathcal{S}\lambda(p)$. The routine \texttt{NEIGHBOURS} is given by algorithm~\ref{algo:git_cone_orbitneighbours}.
+In our case, we use the GIT cone orbit encoding described in section~\ref{sec:git_cone_management}. \texttt{START} is implemented as in \gitfanlib{}, that is selecting random points $p\in Q(\gamma)$ until the corresponding GIT cone $\lambda(p)$ \todo{Notation konsistent?} has full dimension. Then, \texttt{START} returns the GIT cone orbit\=/code of $\mathcal{S}\lambda(p)$. The routine \texttt{NEIGHBOURS} is given by Algorithm~\ref{algo:git_cone_orbitneighbours}.
 
 It remains to model a Petri net describing a parallel graph traversal. Note that this model is applicable for any kind of fan traversal, e.g. in the context of tropical varieties \todo{Referenz von Janko}, as long as the above mentioned demands are satisfied. Figure~\ref{net:algorithm_stage_3} depicts an appropriate Petri net together with a storage interface that allows to record visited nodes outside of the \ac{WE}. The highlighted [data]\=/place combines the results of stage 2, which are required by the \texttt{START} and \texttt{NEIGHBOURS} routines for the GIT fan application.
 
@@ -210,7 +210,7 @@ The graph traversal is initiated by computing an initial node, executing \texttt
 
 The tokens representing frontier nodes are processed by computing adjacent nodes in [\texttt{NEIGHBOURS}]. Then, the results are inserted by invoking the storage interface. Note that the [insert]\=/transition also is synchronised via the [enabled]\=/place in order to prevent simultaneous access to the storage implementation. Whenever the storage interface indicates that at least one node has been inserted, the value of the [enabled]\=/token is set to \texttt{true}, reactivating [get~frontier~node].
 
-The traversal is finished when no frontier nodes are available anymore and no nodes are processed currently. These conditions are met when the Petri net described in figure~\ref{net:algorithm_stage_3} deadlocks. In our implementation, we extended the Petri net by detecting such deadlocks and outputting all nodes, i.e. GIT cone orbits, then.
+The traversal is finished when no frontier nodes are available anymore and no nodes are processed currently. These conditions are met when the Petri net described in Figure~\ref{net:algorithm_stage_3} deadlocks. In our implementation, we extended the Petri net by detecting such deadlocks and outputting all nodes, i.e. GIT cone orbits, then.
 
 \section{Storage implementations used in graph traversals}
 \label{sec:storage_implementations}
@@ -318,3 +318,69 @@ Each test loads a set of valid sample data derived from the $\mathbb{G}(2,5)$ ex
 \emph{System tests} execute the complete application or the Petri nets of each stage separately. The input data is derived from the $\mathbb{G}(2,5)$ example with a trivial symmetry group and a $\mathcal{S}_5$-symmetric group respectively. Furthermore, we check if the first two stages are skipped when supplying precomputed data as described in section~\ref{sec:additional_features}. The routines for verifying the returned results do not depend on the output order of the orbit cones and thus are not susceptible to indeterministic behaviour due to job scheduling.
 
 All input data sets and expected data sets have been computed by using the \gitfanlib{} implementation. Hence, in the $\mathbb{G}(2,5)$ test scenario our calculations comply with the results returned by \gitfanlib{}.
+
+\section{Performance}
+
+In order to evaluate the efficiency and scalability of our implementation, we executed the algorithm for the \msix{} example on the cluster of the \ac{Fraunhofer ITWM}. Each node is operated by a \emph{Dell PowerEdge M620 Blade Server} with the following specification:
+\begin{itemize}
+	\item dual Intel Xeon E5-2670 ("Sandy Bridge") -- i.e. 16 CPU cores
+	\item 64 GB RAM
+	\item 300 GB HDD
+	\item 2x Gigabit Ethernet
+	\item FDR Infiniband
+\end{itemize}
+
+The total runtime of the algorithm as well as the cumulated processing time of all workers have been recorded for varying numbers of available compute nodes. Hence, we are able to compute the degree of utilisation for every configuration. Furthermore, we differentiated between the first two stages, computing the orbit cones and the group action on encoded GIT cones, and the third stage, traversing the GIT fan. The reasoning behind this becomes clear when analysing the results, since the traversal permits a significantly higher degree of parallelisation than the orbit cone calculation. Note that the cumulated runtime of all stages is in accordance with the runtime of the algorithm without running the third stage separately. We executed all stages at once on five compute nodes and concluded that the difference in measured runtime compared to the cumulated runtime after separating the third stage is insignificant.
+
+\subsection*{Computation of the orbit cones}
+
+We computed the orbit cones from the reduced ideal and torus action of the \msix{} example, eliminating the Keel-Vermeire divisors \todo{Referenz auf Beispiel}. Hence, we consider a ring with 25 variables only and the orbit cones live in a 16 dimensional ambient space. Furthermore, we supplied the $\mathcal{S}_6$-group action as symmetry group and precomputed orbit representatives for the faces of the simplex $\mathbb{Q}_{\geq 0}^{25}$. We set the \texttt{job-size} parameter to 100. Finally, we also enabled the computation of the moving cone and the corresponding intersection with the orbit cones. \todo{Ist MovingCone ggf. sogar verpflichtend? Hier noch das M6-Beispiel verstehen} All executions yielded 106 orbit cones that partition into two orbits of size 45, one orbit of size 15 and one orbit of size one. These display the same characteristics as in \cite[Remark 6.7]{gitfan_symmetry}, which is expected as the \gitfanlib{} implementation is not supposed to return different results. Note that the orbit of size one consists of the moving cone. \gitfanlib{} discards this orbit since the moving cone contains other orbit cones as proper subsets. The timing results are shown in Table~\ref{table:performance_orbit_cones}.
+
+\begin{table}
+	\centering
+	\begin{tabular}{@{}rrrrr@{}}
+		\toprule
+		\# nodes & \# cores & $\faktor{\text{timing}}{\text{s}}$ & $\faktor{\text{timing}}{\text{min}}$ & speedup \\
+		\midrule
+		1 & 1  & 2561 & \textasciitilde 43 & 1   \\
+		1 & 16 & 507  & \textasciitilde 8  & 5.0 \\
+		2 & 32 & 499  & \textasciitilde 8  & 5.1 \\
+		3 & 48 & 498  & \textasciitilde 8  & 5.1 \\
+		4 & 64 & 500  & \textasciitilde 8  & 5.1 \\
+		5 & 80 & 497  & \textasciitilde 8  & 5.1 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Timings for computing the orbit cones of the \msix{} example with varying numbers of CPU cores.}
+	\label{table:performance_orbit_cones}
+\end{table}
+
+Compared to a sequential execution on one core, we obtain a maximal speedup of factor 5. This is due to the fact that the costly operation of computing an orbit for a representative -- represented by Step~\ref{enum_item:compute_orbit_cone_orbits} in stage 2 -- is implemented as a sequential operation. Hence, we obtain a theoretical speedup of 9, which is the amount of orbits that have to be computed. Since the required time for computing different orbits varies greatly between 226 and 312 seconds, we obtain a lower speedup when joining the results of Step~\ref{enum_item:compute_orbit_cone_orbits}. Further potential speedup is lost due to the large job size, which relives the \ac{WE} when performing the \aface{}\=/test for all of the 6993 representative of the faces of $\gamma$, but prohibits parallel execution when intersecting the remaining orbit cone representatives with the moving cone. We expect a higher speedup for problems with more orbit cone orbits.
+
+\subsection*{GIT fan traversal}
+
+In order to profile the GIT fan traversal, precomputed values for the moving cone, the orbit cones and the group action on encoded GIT cones are provided (see section~\ref{sec:additional_features}). We set the \texttt{job-size} parameter to 10 and use \texttt{rpc} as storage implementation. The timing results are shown in Table~\ref{table:performance_orbit_cones}.
+
+\begin{table}
+	\centering
+	\begin{tabular}{@{}rrrrrr@{}}
+		\toprule
+		\# nodes & \# cores & $\faktor{\text{timing}}{\text{s}}$ & $\faktor{\text{timing}}{\text{min}}$ & speedup & utilisation \\
+		\midrule
+		1  & 16  & 25116 & \textasciitilde 419 & 1    & 0.996 \\
+		5  & 80  & 5224  & \textasciitilde 87  & 4.8  & 0.990 \\
+		10 & 160 & 2635  & \textasciitilde 44  & 9.5  & 0.974 \\
+		15 & 240 & 1842  & \textasciitilde 31  & 13.6 & 0.911 \\
+		20 & 320 & 1414  & \textasciitilde 24  & 17.8 & 0.885 \\
+		25 & 400 & 1189  & \textasciitilde 20  & 21.1 & 0.837 \\
+		30 & 480 & 979   & \textasciitilde 16  & 25.6 & 0.845 \\
+		35 & 560 & 895   & \textasciitilde 15  & 28.0 & 0.790 \\
+		40 & 640 & 775   & \textasciitilde 13  & 32.4 & 0.799 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Timings for traversing the GIT fan of the \msix{} example with varying numbers of CPU cores.}
+	\label{table:performance_gitfan_traversal}
+\end{table}
+
+Figure~\ref{graph:traversal_speedup} and~\ref{graph:traversal_utilisation} indicate that our algorithm scales almost linearly up to 40 compute nodes with a total of 640 cores. Only slight losses concerning utilisation have been recorded. We noted that on average only 560 of the 640 available cores run module code simultaneously, implying that the \ac{WE} begins to strain when generating jobs for 40 nodes. Furthermore, a minute elapses before the set of frontier nodes has grown to a reasonable size such that enough jobs can be generated in order to utilise the majority of all cores. The timing diagram displayed in Figure~\ref{graph:traversal_timing} matches a hyperbolic curve, which is in accordance with the linear speedup we observed previously.
+
+\input{graphics/graphs_gitfan_traversal}

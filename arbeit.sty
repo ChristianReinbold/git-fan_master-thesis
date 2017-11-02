@@ -14,6 +14,8 @@
 \usepackage{epsfig}
 \usepackage{kpfonts}
 \usepackage{blindtext}
+\usepackage{booktabs}		% for nice tables, see https://www.inf.ethz.ch/personal/markusp/teaching/guides/guide-tables.pdf
+\usepackage{pgfplots}
 \usepackage{ifpdf}			% workaround for tikz auto-pst-pdf incompatibility		
 \ifpdf\usepackage{tikz}\fi  % https://tex.stackexchange.com/questions/166623/tikz-and-auto-pst-pdf-break-ghostscript
 \usetikzlibrary{automata,calc,arrows,shapes,petri,backgrounds,shapes.geometric}
@@ -84,6 +86,9 @@
 \linespread{1.1}
 \parindent 0cm
 \parskip 4pt
+
+%% Increase spacing between table rows for better readability
+\renewcommand{\arraystretch}{1.2}
 
 %% Bold math-fonts in heading
 \makeatletter
