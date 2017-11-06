@@ -1,19 +1,152 @@
-\chapter{Concept of the algorithm}
-\label{chap:algorithm}
 
-% Proposition: GIT cone is the intersection of all orbit cones containing it.
+
+% Grundlegender Aufbau:
+% Git-Equivalence beyond the ample cone kommt in das Preliminaries-Kapitel
+% Noch in Erfahrung bringen: Sinn den MovingCones.
+
 
 % Reference to algorithm describing the whole application
 \label{algorithm:main}
 
+\chapter{Concept of the algorithm}
+\label{chap:algorithm}
+
+In the following sections we are going to develop a mathematical and algorithmic framework that allows us to compute the GIT fan for the case of a torus acting on an affine variety. The concepts presented in this chapter base on \cite{gitfan_symmetry, gitfan}.
+
+First, we describe the formal setup and introduce the notation being used in the upcoming chapters. In the second section we present an algorithm that is capable of identifying orbit cones. They play an important role in the theory since all GIT cones emerge from their intersections. Afterwards, we transform the problem of computing the GIT fan into the problem of traversing a graph and present a suitable algorithm. Third, we modify the previous algorithms such that symmetries of the affine variety may be exploited in order to reduce the problem size by a factor that relates to the size of the symmetry group. Finally, we give an counterexample that -- contrary to \cite{gitfan_symmetry} -- one cannot drop non-minimal orbit cones with respect to inclusion. For this reason, we leave out the minimisation process.
+
+\section{The setup}
+
+Let $\field$ be an algebraically closed field.
+\index{K@$\field$}%
+We consider an affine variety $X$ that is embedded into $\field^r$ such that $X$ is the vanishing locus of an monomial free ideal $\ideal\subseteq \field[x_1,\dots,x_r]\eqdef \field[\mathbf{x}]$.
+\index{X@$X$}%
+\index{a@$\ideal$}%
+\index{r@$r$}%
+Furthermore, we assume that $\ideal$ is homogeneous with respect to a $\integer^k$\=/grading such that the vectors 
+$$q_i\defeq \deg(x_i)\in\integer^k\quad 1\leq i \leq r$$
+form the columns of a matrix $Q\in\field^{k\times r}$ of rank $k$.
+\index{k@$k$}%
+\index{Q@$Q$}%
+\index{qi@$q_i$}%
+Hence, the coordinate ring $\faktor{\field[\mathbf{x}]}{\ideal}$ becomes a $\integer^k$\=/graded ring. We obtain an action of the $k$\=/dimensional algebraic torus $\spec(\field[q_1,\dots,q_r])\cong (\field^*)^k$ on $X$ given by
+$$(\field^*)^k \times X \rightarrow X,\quad (t,P) \mapsto (t^{q_1}P_1,\dots,t^{q_r}P_r).$$
+Every algebraic torus acting on $X$ may be realised in this way \todo{Referenz}.
+
 \section{Computing orbit cones}
-Monomial containment test
-Moving Cone
+
+In this section we describe orbit cones by faces of the positive orthant $\mathbb{Q}_{\geq 0}^r$, which we denote by $\gamma$.
+\index{gamma@$\gamma$}%
+From a combinatorial point of view these faces are subsets of $\{1,\dots,r\}$ such that whenever $e_i$ is a ray of a face, $i$ is located in the corresponding subset. A face $\gamma_0 \preceq \gamma$ defines a restriction $z_{\gamma_0}$ of any $r$\=/tuple of objects $z=(z_1,\dots,z_r)$ by setting
+$$(z_{\gamma_0})_i =
+\begin{cases}
+z_i, & e_i\in\gamma_0 \\
+0, & \text{else}
+\end{cases}\quad 1\leq i \leq r.$$
+We write $\ideal_{\gamma_0}$ for the ideal in $\field[\mathbf{x}_{\gamma_0}]$ that is obtained by sending all $x_i$ in $\ideal$ with $x_i\notin\gamma_0$ to zero.
+\index{agamma0@$\ideal_{\gamma_0}$}%
+Additionally, we define
+$$\T_{\gamma_0} \defeq (\field^*)^r \cdot (1,\dots,1)_{\gamma_0},$$
+which is the torus corresponding to $\gamma_0$.
+\index{Tgamma0@$\T_{\gamma_0}$}%
+
+\begin{defi}[\aface]
+	A face $\gamma_0\preceq\gamma$ is called \emph{\aface{}} iff $X\cap \T_{\gamma_0} \neq \emptyset$.
+	\index{aface@\aface}%
+\end{defi}
+
+\begin{theorem}
+	\label{theorem:aface_orbit_cone_correspondence}
+	The set
+	$$\Omega_\ideal \defeq \left\{Q(\gamma_0)\ |\ \gamma_0\preceq\gamma \text{ is an } \ideal\text{\=/face}\right\}$$
+	equals the collection of orbit cones as in \todo{Referenz auf Preliminaries}.
+	\index{Oa@$\Omega_\ideal$}%
+\end{theorem}
+\begin{proof}
+	Let $x\in X$. Set $I_x = \{1 \leq i \leq r\ |\ x_i \neq 0\}$ and $J_x = \{1 \leq i \leq r\ |\ x_i = 0\}$. We claim that
+	$$S_{(\field^*)^k}(x) = \langle q_i\ |\ i\in I_x\rangle,$$
+	where $S_{(\field^*)^k}(x)$ is the orbit monoid of $x$ as in \todo{Referenz auf Preliminaries}.
+	
+	Let $i\in I_x$. Since $x_i\in\field[\mathbf{x}]$ does not send $x$ to zero, we have
+	$$q_i = \deg(x_i)\in S_{(\field^*)^k}(x).$$
+	Now let $w\in S_{(\field^*)^k}(x)$. Then there exists $f\in\field[\mathbf{x}]_w$ such that $f(x) \neq 0$. In particular, at least one monomial $\mathbf{x}^\alpha$ of $f$ does not send $x$ to zero, thus $\alpha_j = 0$ for all $j\in J_x$. On that account we have
+	$$w = \deg(x^\alpha) = \sum_{i=1}^r \alpha_i q_i = \sum_{i\in I_x} \alpha_i q_i,$$
+	proving the claim.
+	
+	If $\gamma_0\preceq\gamma$ is an \aface{}, we find a point $x\in X\cap \T_{\gamma_0}$. By the previous claim, its orbit monoid is generated by the columns $q_i$ of $Q$ with $e_i\in\gamma_0$. Consequently, $Q(\gamma_0)$ is the orbit cone of $x$ generated by $S_{(\field^*)^k}(x)$.
+	
+	Conversely, consider the orbit cone of an arbitrary point $x\in X$. Let $\gamma_x$ be the face of $\gamma$ that is generated by the rays $e_i$ with $i\in I_x$. Then $\gamma_x$ is an \aface{}, since $x\in X\cap \T_{\gamma_x}$. With the same arguments as before, it follows that $Q(\gamma_x)$ is the orbit cone of $x$.
+\end{proof}
+
+The previous theorem shows that all orbit cones arise from \afaces{} and that every \aface{} yields an orbit cone. Thus, if we are able to develop computable criteria in order to implement a test for the \aface{} property, we can derive all orbit cones by applying $Q$. The next theorem provides us with a suitable criterion.
+
+\begin{theorem}
+	\label{theorem:aface_equivalence}
+	Let $\gamma_0\preceq\gamma$ be a face and $I= \{1\leq i\leq r\ |\ e_i\in\gamma_0\}$. Then the following conditions are equivalent:
+	\begin{enumerate}[label={\upshape(\roman*)}]
+		\item $\gamma_0$ is an \aface{}, that is $X\cap \T_{\gamma_0} \neq \emptyset$,
+		\label{enum_item:aface_equivalence_aface}
+		\item $\ideal_{\gamma_0}$ does not contain a monomial,
+		\label{enum_item:aface_equivalence_monomial}
+		\item $\ideal_{\gamma_0} : (\prod_{i\in I} x_i)^\infty = \field[\mathbf{x}_{\gamma_0}]$.
+		\label{enum_item:aface_equivalence_saturation}
+	\end{enumerate}
+\end{theorem}
+\begin{proof}
+	\ref{enum_item:aface_equivalence_monomial} $\Leftrightarrow$ \ref{enum_item:aface_equivalence_saturation} immediately follows from the definition of saturated ideals, which unravels to
+	$$\ideal_{\gamma_0} : \left(\prod_{i\in I} x_i\right)^\infty = \left\{r\in \field[\mathbf{x}]\ \middle|\ \exists j\in\natural: r\cdot \left(\prod_{i\in I} x_i\right)^j \in \ideal_{\gamma_0}\right\}.$$
+	If $\ideal_{\gamma_0}$ contains a monomial $x^\alpha$, we have that $(\prod_{i\in I} x_i)^j\in\ideal_{\gamma_0}$, where $j$ is the largest integer occurring in $\alpha$. Thus, $1\in \ideal_{\gamma_0} : (\prod_{i\in I} x_i)^\infty$ and therefore \ref{enum_item:aface_equivalence_saturation} follows. Otherwise, if \ref{enum_item:aface_equivalence_saturation} holds, a power of $\prod_{i\in I} x_i$, which is a monomial, is contained in $\ideal_{\gamma_0}$.
+	
+	\ref{enum_item:aface_equivalence_aface} $\Rightarrow$ 
+	\ref{enum_item:aface_equivalence_monomial}: Choose a point $x\in X\cap \T_{\gamma_0}$. Assume that \ref{enum_item:aface_equivalence_monomial} does not hold, i.e. $\ideal_{\gamma_0}$ contains a monomial $\mathbf{x}^\alpha$, $\alpha = (\alpha_i)_{i\in I}$, that is obtained by sending all $x_i$, $i\notin I$, in $f\in\ideal$ to zero.
+	Since $x\in\T_{\gamma_0}$, it holds that
+	$$f(x) = \prod_{i\in I} x_i^{\alpha_i} \neq 0,$$
+	contradicting $x\in X = V(\ideal)$.
+	
+	\ref{enum_item:aface_equivalence_monomial} $\Rightarrow$ 
+	\ref{enum_item:aface_equivalence_aface}: Assume that $V(\ideal_{\gamma_0}) \subseteq V(\prod_{i\in I} x_i)$ holds. Then Hilbert's Nullstellensatz yields a $j\in\natural$ such that $(\prod_{i\in I} x_i)^j\in\ideal_{\gamma_0}$, contradicting \ref{enum_item:aface_equivalence_monomial}. Hence, $V(\ideal_{\gamma_0}) \not\subseteq V(\prod_{i\in I} x_i)$. In particular, we find a point $z = (z_i)_{i\in I} \subseteq \field^*$ with $z\in V(\ideal_{\gamma_0})$. We extend $z$ to a point $\tilde{z}\in\T_{\gamma_0}$ by setting
+	$$\tilde{z}_i = \begin{cases}
+	z_i, & i\in I \\
+	0, & \text{else}
+	\end{cases}\quad 1\leq i \leq r.$$
+	
+	Let $f\in\ideal$ and $f_{\gamma_0}\in\ideal_{\gamma_0}$ be the reduction of $f$ by sending all variables $x_i$, $i\notin I$, to zero. Then we have
+	$$f(\tilde{z}) = f_{\gamma_0}(z) = 0,$$
+	since $z\in V(\ideal_{\gamma_0})$. We conclude that $\tilde{z}\in X$, showing \ref{enum_item:aface_equivalence_aface}.
+\end{proof}
+
+Next, we have to implement an algorithm computing $I : (z_1\cdots z_n)^\infty$ for arbitrary ideals $I\field[z_1,\dots,z_n]$. It allows us to identify all \afaces{} by Theorem~\ref{theorem:aface_equivalence} and thus all orbit cones by Theorem~\ref{theorem:aface_orbit_cone_correspondence}. The algorithm presented here originates from \cite{gitfan_symmetry} and has been implemented in \gitfanlib. It relies on the following proposition that allows us to compute $I : (z_i)^\infty$ with relative ease by a small modification to the Buchberger's algorithm.
+
+\begin{prop}[\phantom{}{\cite[Proposition 3.1]{gitfan_symmetry}}]
+	Let $>$ be a monomial ordering on $\field[\mathbf{z}]$, $\mathcal{G}$ be a Gröbner basis of $I$ with respect to $>$ and $m\in\{1,\dots,n\}$. If $>$ satisfies
+	$$z_m \mid f\ \Leftrightarrow\ z_m \mid \text{LM}_>(f),$$
+	then
+	$$\left\{g\in\field[\mathbf{z}]\ \middle|\ z_m\not|\ g\ \mathrm{and}\ \exists i\in\natural: (z_m)^i \cdot g \in \mathcal{G}\right\}$$
+	is a Gröbner basis for the saturated ideal $I : (z_m)^\infty$. 
+\end{prop}
+
+
+% Algorithmus für Saturation (Prop 3.1 im Symmetry-Paper)
+
 \section{Traversing the GIT fan}
 
-%The traversal yields all nodes in this graph and thus a full description of the GIT fan. 
+%The traversal yields all nodes in this graph and thus a full description of the GIT fan.
+% Warum reicht es, voll-dim Kegel GIT Cones zu betrachten? (Lemma 2.5 aus git-fan_computing)
 
-\todo{Theorie aus Kapitel 4 übernehmen}
+%\todo{orbits mit p enthalten git cone} (für Kodierung) % Proposition: GIT cone is the intersection of all orbit cones containing it.
+
+% Formalen Teil aus Kap. 4 übernehmen (Teil <e>)
+% Nachbarschaftsalgorithmus
+
+
+\section{Exploiting symmetry}
+
+%Def. Symmetry-group
+% a-face Invarianz
+%\todo{Referenz: S wirkt auf OrbitCones} - und damit auf GIT-Cones nach Lemma "GIT cone is intersection..."
+%Moving Cone invariant under symmetry group
+%Formaler Teil zu GITFAN traversal aus Kap. 4
+% Beweis zur Korrektheit des Nachbarschaftsalgorithmus
 
 \begin{algorithm}
 	\caption{Computing all neighbours of an GIT cone orbit}
@@ -28,7 +161,6 @@ Moving Cone
 		$\mathcal{N}\leftarrow \mathcal{N} \cup \{\mathcal{S}\mu\}$\;
 	}
 	\Return $\mathcal{N}$\;
-\end{algorithm}	
+\end{algorithm}
 
-
-\section{Exploiting symmetry}
+\section{Counterxample: Removing nominimal orbit cones}

@@ -100,6 +100,8 @@ In chapter~\ref{chap:algorithm}, we suggested to traverse a graph that reflects 
 		\label{enum_item:git_cone_orbit_property_operations}
 \end{enumerate}
 
+We reuse the notation from chapter~\ref{chap:algorithm}. Recall that the matrix $Q\in\field^{k\times r}$ of rank $r$ with columns $q_1,\dots,q_r$ encodes a torus action on the affine variety $X = V(\ideal)\subseteq \field^r$ where $\ideal\subseteq \field[x_1,\dots,x_r]$ is a homogeneous ideal with respect to the grading $\deg(x_i) = q_i$, $1\leq i\leq r$. The positive orthant $\mathbb{Q}_{\geq 0}^r$ is denoted by $\gamma$. Furthermore, $\mathcal{S}$ (possibly trivial) denotes a symmetry group of the action of $Q$ on $X$. \todo{Notation mit Kap. 3 prüfen}
+
 \subsection*{Encoding GIT cones}
 In order to encode GIT cone orbits, we require an appropriate encoding for GIT cones that allows us to apply the group action of $\mathcal{S}$ with minimal costs. The encoding described here originates from \cite[Construction 4.3]{gitfan_symmetry} and has been implemented in \gitfanlib{}. It utilises the result of \todo{orbits mit p enthalten git cone}, stating that every full dimensional GIT cone is the finite intersection of all full dimensional orbit cones containing the GIT cone. Thus, every GIT cone $\lambda$ can be uniquely identified by bits indexed over $\Omega_\mathfrak{a}^{(k)}$ such that the bit indexed by $\vartheta\in\Omega_\mathfrak{a}^{(k)}$ is set to $1$ iff $\lambda \subseteq \vartheta$. Formally:
 $$\code\colon \Lambda(\mathfrak{a},Q)(k) \rightarrow \{0,1\}^{\Omega_\mathfrak{a}^{(k)}},\quad
@@ -131,14 +133,12 @@ We differentiate between three stages when implementing the algorithm described 
 
 \input{graphics/petri_net_algorithm_overview}
 
-We reuse the notation from chapter~\ref{chap:algorithm}. Recall that the matrix $Q\in\field^{k\times r}$ of rank $r$ with columns $q_1,\dots,q_r$ encodes a torus action on the affine variety $X = V(\ideal)\subseteq \field^r$ where $\ideal\subseteq \field[x_1,\dots,x_r]$ is a homogeneous ideal with respect to the grading $\deg(x_i) = q_i$, $1\leq i\leq r$. The positive orthant $\mathbb{Q}_{\geq 0}^r$ is denoted by $\gamma$. Furthermore, $\mathcal{S}$ (possibly trivial) denotes a symmetry group of the action of $Q$ on $X$. \todo{Notation mit Kap. 3 prüfen}
-
 \subsection*{Stage 1: Preprocessing, \afaces}
 Stage 1 starts with preprocessing the raw input supplied by the user. During the process, we compute the following objects sequentially:
 \begin{itemize}
 	\item The amount $r$ of variables occurring in the basering and the dimension $k$ of the ambient space in which the GIT fan lives. Both values are extracted from the matrix describing the torus action.
 	\item the moving cone (optionally, see section~\ref{sec:additional_features})
-	\item orbit representatives for the faces of the simplex $\gamma$ under the symmetry group $\mathcal{S}$ in case it is nontrivial and no set of precomputed orbit representatives is provided (see section~\ref{sec:additional_features}).
+	\item orbit representatives for the faces of the simplex $\gamma$ under the symmetry group $\mathcal{S}$ in case it is non\=/trivial and no set of precomputed orbit representatives is provided (see section~\ref{sec:additional_features}).
 \end{itemize}
 
 In a next step, the set of orbit representatives for the faces of the simplex $\gamma$ is partitioned into parts of equal size. A token is generated for every part, which then is processed in parallel, selecting only the \afaces{} with full dimensional image under $Q$. Finally, the reduced parts are merged into a single token that then is passed to the next stage. The Petri net modelling this process is depicted in Figure~\ref{net:algorithm_stage_1}.
@@ -161,7 +161,7 @@ After identifying a representative system for the \afaces{} with full dimensiona
 
 With the exception of Step~\ref{enum_item:aggregate_orbits}, in all steps a prescribed operation has to be executed on each element of a list of either cones or orbits. Hence, we are able to parallelise the computations in each step by partitioning the list into equally sized parts as described for stage 1. Note that the elimination of duplicates in Step~\ref{enum_item:eliminate_duplicate_orbits} translates to selecting all list entries such that no subsequent list entry equals the selected one.
 
-The most computationally intensive operation is performed in step 3. Every group element is applied to the representative. Since the stabiliser subgroup may be nontrivial, we have to take care of possible duplicates. In order to do so, whenever a new cone is determined, the \gitfanlib{} implementation runs expensive comparisons with all previously found orbit elements and discards the cone if any matches are detected. We reworked the approach by
+The most computationally intensive operation is performed in step 3. Every group element is applied to the representative. Since the stabiliser subgroup may be non\=/trivial, we have to take care of possible duplicates. In order to do so, whenever a new cone is determined, the \gitfanlib{} implementation runs expensive comparisons with all previously found orbit elements and discards the cone if any matches are detected. We reworked the approach by
 exchanging the expensive comparison of cones with a string comparison of the cone's serialization, which is one to one for cones returned from \singular's \texttt{canonicalizeCone} routine. Furthermore, we manage the found cones in a hash table \todo{Referenz zu einer Hashtable-Einführung?}, using a hash function on the serialization string. Since the maximal orbit size is known to be the cardinality of $\mathcal{S}$, we can adjust the size of the hash table such that hash collisions are unlikely. Hence, the duplicate elimination comes for free by performing only one string comparison on average.
 
 The \gitfanlib{} implementation also compares cones in order to determine the action of $\mathcal{S}$ on the git cone orbits. However, the action may be constructed from the cayley table of $\mathcal{S}$ as long it is known which group elements map to the same orbit element. For this reason we drop the cone comparisons and compute the action by composing permutations in $\mathcal{S}$, which is a very cheap operation scaling with the amount $r$ of variables occurring in the basering..
@@ -236,7 +236,7 @@ is available, this approach scales until a certain threshold is passed.
 
 In the \msix{} example we have to store up to 249\,604 entries of 106 bits each, summing up to about 3 MB of data. Thus, we are far away from reaching the limit of up\=/to\=/date RAM sizes. If one intends to run graph traversals consuming more memory than being available on a single node, the current storage solution may be extended by an implementation of a distributed hash table such as \emph{Chord}, utilising the RAM of every available node. \cite{chord}
 
-When considering response timings, the second approach performs significantly better than the implementation using \beegfs{}. Overhead induced by awaiting responses of the RPC\=/server is negligible even when executing the algorithm on 40 nodes with 16 cores each (see \todo{Forward-Referenz auf Performance-Kapitel}).
+When considering response timings, the second approach performs significantly better than the implementation using \beegfs{}. Overhead induced by awaiting responses of the RPC\=/server is negligible even when executing the algorithm on 40 nodes with 16 cores each.
 
 \section{Input \& Output structure}
 
@@ -246,7 +246,7 @@ The application is controlled by various command line parameters. In particular,
 	\item[\texttt{ideal}:] The path to a file which contains the vanishing ideal $\mathfrak{a}$ in the \ac{ssi} format.
 	\item[\texttt{torus-action}:] The path to a file which contains the matrix $Q$ encoding the torus action in the \ac{ssi} format.
 	\item[\texttt{symmetry-group} (optional):] The path to a file which contains the symmetry group $S$ as a list of permutation\=/types as defined in \gitfanlib{}. The data has to be present in the \ac{ssi} format. If no path is supplied, the trivial group is assumed.
-	\item[\texttt{working-directory}:] A nonexistent directory which the application uses as working and output directory.
+	\item[\texttt{working-directory}:] A non\=/existent directory which the application uses as working and output directory.
 \end{description}
 
 When the application terminates, the following files have been written to the working directory:
@@ -273,7 +273,7 @@ The application is shipped with several additional features such as intersecting
 
 \subsection*{Intersecting with the moving cone}
 
-Instead of computing the GIT fan with support $Q(\lambda)$, the application may also compute the intersection of the GIT fan with the moving cone for $Q$. In order to do so, the user has to supply a file path for the optional command line argument \texttt{moving-cone}. If the path refers to a nonexistent file, the application computes the moving cone from $Q$ and outputs it to the given path. If the path refers to an existent file instead, the application assumes that the file contains the precomputed moving cone in the \ac{ssi} format and loads this file instead of computing the moving cone.
+Instead of computing the GIT fan with support $Q(\lambda)$, the application may also compute the intersection of the GIT fan with the moving cone for $Q$. In order to do so, the user has to supply a file path for the optional command line argument \texttt{moving-cone}. If the path refers to a non\=/existent file, the application computes the moving cone from $Q$ and outputs it to the given path. If the path refers to an existent file instead, the application assumes that the file contains the precomputed moving cone in the \ac{ssi} format and loads this file instead of computing the moving cone.
 
 \subsection*{Acceleration by using precomputed data}
 
