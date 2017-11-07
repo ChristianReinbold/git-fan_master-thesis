@@ -243,7 +243,7 @@ When considering response timings, the second approach performs significantly be
 The application is controlled by various command line parameters. In particular, the user provides command line argument values specifying the input data and the output directory. In the following we describe all parameters concerning input and output:
 
 \begin{description}
-	\item[\texttt{ideal}:] The path to a file which contains the vanishing ideal $\mathfrak{a}$ in the \ac{ssi} format.
+	\item[\texttt{ideal}:] The path to a file which contains the vanishing ideal $\ideal$ in the \ac{ssi} format. The monomial ordering associated to the basering over which $\ideal$ is defined has to be a global, weighted reverse lexicographical ordering such that the generators of $\ideal$ are homogeneous with respect to the weight vector (see Remark~\ref{remark:satisying_assumption_saturated_monomial}).
 	\item[\texttt{torus-action}:] The path to a file which contains the matrix $Q$ encoding the torus action in the \ac{ssi} format.
 	\item[\texttt{symmetry-group} (optional):] The path to a file which contains the symmetry group $S$ as a list of permutation\=/types as defined in \gitfanlib{}. The data has to be present in the \ac{ssi} format. If no path is supplied, the trivial group is assumed.
 	\item[\texttt{working-directory}:] A non\=/existent directory which the application uses as working and output directory.
