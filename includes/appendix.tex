@@ -9,3 +9,33 @@
 	$$S \defeq |\Sigma| \setminus \left(\bigcup_{\theta\in\Sigma\setminus\Sigma^{(k)}} H_\theta\right) \subseteq \bigcup_{\sigma\in\Sigma^{(k)}} \sigma \eqdef |\Sigma^{(k)}|.$$
 	Since $|\Sigma|$ has dimension $k$ and $S$ arises from $|\Sigma|$ by removing finitely many hyperplanes, $S$ has dimension $k$. For this reason we find $q\in S \setminus\{p\}$. By Bézout's theorem, every hyperplane $H_\theta$ intersects the line through $p$ and $q$ in at most one point. As $|\Sigma|$ is convex, the connecting line $\overline{pq}$ is contained in $|\Sigma|$ and $\overline{pq} \cap S$ emerges from $\overline{pq}$ by removing a finite amount of points. Hence, we find a sequence $(p_n)_{n\in\natural}\subseteq \overline{pq} \cap S$ such that $\lim\limits_{n\rightarrow\infty} p_n = p$. It follows that $p\in\overline{S}$. Since $|\Sigma^{(k)}|$ is closed as a finite union of closed sets, $p\in|\Sigma^{(k)}|$ holds. Let $\sigma\in\Sigma^{(k)}$ such that $p\in\sigma$. Then the common face of $\sigma$ and $\tau$ contains $p$ and thus has to be $\tau$. We conclude that $\tau\preceq\sigma$.
 \end{proof}
+
+\chapter{Ideal quotients}
+\label{appendix:ideal_quotients}
+
+Theory about saturated ideals allows us to implement an efficient monomial containment test, see \cite{gitfan_symmetry}. Here, we establish some elementary properties that are used in this thesis.
+
+\begin{defiApp}
+	Let $I,J$ be ideals over a commutative ring $R$. Then we define the \emph{ideal quotient} $(I:J)$ by
+	$$(I:J) = \{r\in R\ |\ rJ\subseteq I\}.$$
+	The \emph{saturation} $(I:J^\infty)$ is given by
+	$$(I:J^\infty) = \bigcup_{n\in \natural}(I:J^n).$$
+\end{defiApp}
+
+\begin{propApp}
+	Let $I$, $J$, $K$ be ideals over $R$ and let $f,g\in R$. Then we have:
+	\begin{enumerate}[label={\upshape(\roman*)}]
+		\item $I\subseteq J\ \Rightarrow\ (I:K^\infty)\subseteq(J:K^\infty)$,
+		\label{enum_item:saturation_inclusion_property}
+		\item $((I:(f)^\infty):(g)^\infty) = (I:(fg)^\infty)$.
+		\label{enum_item:saturation_principal_property}
+	\end{enumerate}
+\end{propApp}
+\begin{proof}
+	\ref{enum_item:saturation_inclusion_property} immediately follows from the definition. For \ref{enum_item:saturation_principal_property}, note that
+	$$(I:(f)) = \{r\in R\ |\ rf\in I\}\quad\text{and}\quad (I:(f)^\infty) = \{r\in R\ |\ \exists n\in\natural: rf^n\in I\}.$$
+	
+	Let $r\in (I:(fg)^\infty)$. We find $n\in \natural$ such that $(rg^n)f^n = r(fg)^n\in I$. Hence, $rg^n\in (I:(f)^\infty)$. It follows that $r\in((I:(f)^\infty):(g)^\infty)$.
+	
+	Conversely, let $r\in((I:(f)^\infty):(g)^\infty)$. Then we find $n\in \natural$ such that $rg^n\in (I:(f)^\infty)$. This implies that there exists an $m\in\natural$ such that $rg^nf^m\in I$. For this reason $r(fg)^{\max\{n,m\}}\in I$ and thus $r\in (I:(fg)^\infty)$ holds, proving \ref{enum_item:saturation_principal_property}.
+\end{proof}
