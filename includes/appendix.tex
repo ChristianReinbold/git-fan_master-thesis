@@ -2,12 +2,14 @@
 
 \begin{lemmaApp}
 	\label{lemma:convex_fan_maximal_cones}
-	Let $\Sigma\subseteq\mathbb{R}^k$ be a $k$-dimensional fan with convex support. Then $\Sigma$ is uniquely determined by $\Sigma^{(k)}$.
+	Let $\Sigma\subseteq\mathbb{R}^k$ be a $k$-dimensional fan with convex support. Then every cone in $\Sigma$ is a face of a cone in $\Sigma^{(k)}$. In particular, $\Sigma$ is uniquely determined by $\Sigma^{(k)}$.
 \end{lemmaApp}
 \begin{proof}
-	We show that every cone in $\Sigma$ is a face of a cone in $\Sigma^{(k)}$. Let $\tau\in\Sigma$ and choose a point $p\in\relint(\tau)$. We select hyperplanes $H_\theta$ for all $\theta\in\Sigma\setminus\Sigma^{(k)}$ such that $\theta\subseteq H_\theta$. Then we have
+	Let $\tau\in\Sigma$ and choose a point $p\in\relint(\tau)$. We select hyperplanes $H_\theta$ for all $\theta\in\Sigma\setminus\Sigma^{(k)}$ such that $\theta\subseteq H_\theta$. Then we have
 	$$S \defeq |\Sigma| \setminus \left(\bigcup_{\theta\in\Sigma\setminus\Sigma^{(k)}} H_\theta\right) \subseteq \bigcup_{\sigma\in\Sigma^{(k)}} \sigma \eqdef |\Sigma^{(k)}|.$$
 	Since $|\Sigma|$ has dimension $k$ and $S$ arises from $|\Sigma|$ by removing finitely many hyperplanes, $S$ has dimension $k$. For this reason we find $q\in S \setminus\{p\}$. By Bézout's theorem, every hyperplane $H_\theta$ intersects the line through $p$ and $q$ in at most one point. As $|\Sigma|$ is convex, the connecting line $\overline{pq}$ is contained in $|\Sigma|$ and $\overline{pq} \cap S$ emerges from $\overline{pq}$ by removing a finite amount of points. Hence, we find a sequence $(p_n)_{n\in\natural}\subseteq \overline{pq} \cap S$ such that $\lim\limits_{n\rightarrow\infty} p_n = p$. It follows that $p\in\overline{S}$. Since $|\Sigma^{(k)}|$ is closed as a finite union of closed sets, $p\in|\Sigma^{(k)}|$ holds. Let $\sigma\in\Sigma^{(k)}$ such that $p\in\sigma$. Then the common face of $\sigma$ and $\tau$ contains $p$ and thus has to be $\tau$. We conclude that $\tau\preceq\sigma$.
+	
+	Now, $\Sigma$ is uniquely determined by $\Sigma^{(k)}$ since fans are closed under taking faces.
 \end{proof}
 
 \chapter{Ideal quotients}
