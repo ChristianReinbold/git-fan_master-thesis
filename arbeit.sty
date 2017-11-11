@@ -2,8 +2,16 @@
 \usepackage{etex}								% Resolve "no room for a new \dimen"
 \usepackage[ngerman, english]{babel}
 \usepackage[utf8]{inputenc}						% Unicode
+
+\usepackage[crop=off]{auto-pst-pdf}				% compatibility package of pstricks for pdflatex.
+% Make sure to use the -shell-escape option
+\usepackage{pst-all}							% pstricks
+\usepackage{ifpdf}			% workaround for tikz auto-pst-pdf incompatibility		
+\ifpdf  % https://tex.stackexchange.com/questions/166623/tikz-and-auto-pst-pdf-break-ghostscript
+
+\usepackage{tikz}
 \usepackage{multicol}        					% fuer einen 2-Seiten Index
-\usepackage[usenames,dvipsnames]{color}   		% fuer die Benutzung von Farben
+%\usepackage[usenames,dvipsnames]{color}   		% fuer die Benutzung von Farben
 \usepackage{amssymb, amsmath, amscd,amsfonts}	% AMS-Zeichensaetze
 \usepackage{faktor}								% \faktor for quotients
 \usepackage{xypic}
@@ -17,12 +25,7 @@
 \usepackage{blindtext}
 \usepackage{booktabs}		% for nice tables, see https://www.inf.ethz.ch/personal/markusp/teaching/guides/guide-tables.pdf
 \usepackage{pgfplots}
-\usepackage{ifpdf}			% workaround for tikz auto-pst-pdf incompatibility		
-\ifpdf\usepackage{tikz}\fi  % https://tex.stackexchange.com/questions/166623/tikz-and-auto-pst-pdf-break-ghostscript
 \usetikzlibrary{automata,calc,arrows,shapes,petri,backgrounds,shapes.geometric}
-\usepackage[crop=off]{auto-pst-pdf}				% compatibility package of pstricks for pdflatex.
-											    % Make sure to use the -shell-escape option
-\usepackage{pst-all}							% pstricks
 \usepackage{varwidth}							% dynamic minipage size
 \usepackage[automark,headsepline,markcase=upper]{scrlayer-scrpage}	% Kopf- und Fußzeilen
 \usepackage{geometry}		% Definierbare Seitenränder
@@ -42,6 +45,8 @@
 
 \usepackage{makeidx}
 \makeindex
+
+\fi
 
 % Schusterjungen/Hurenkinder vermeiden
 \clubpenalty = 10000 

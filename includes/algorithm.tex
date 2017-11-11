@@ -16,6 +16,7 @@ In the following sections we are going to develop a mathematical and algorithmic
 First, we describe the formal setup and introduce the notation being used in the upcoming chapters. In the second section we present an algorithm that is capable of identifying orbit cones. They play an important role in the theory since all GIT cones emerge from their intersections. Afterwards, we transform the problem of computing the GIT fan into the problem of traversing a graph and present a suitable algorithm. Third, we modify the previous algorithms such that symmetries of the affine variety may be exploited in order to reduce the problem size by a factor that relates to the size of the symmetry group. Finally, we give an counterexample that -- contrary to \cite{gitfan_symmetry} -- one cannot drop non-minimal orbit cones with respect to inclusion. For this reason, we leave out the minimisation process.
 
 \section{The setup}
+\label{section:setup}
 
 Let $\field$ be an algebraically closed field.
 \index{K@$\field$}%
@@ -500,4 +501,124 @@ Finally, Algorithm~\ref{algo:compute_git_cone_orbits} computes all full dimensio
 
 \todo{Moving Cone invariant under symmetry group}
 
-\section{Counterexample: Removing non\=/minimal orbit cones}
+\section{Counterexample: Removal of non-minimal orbit cones}
+
+By discarding as many orbit cones as possible in $\Omega_\ideal^{(k)}$ without affecting the resultant GIT fan, one can speed up the computation of the associated GIT cone $\lambda(p)$ of an arbitrary point $p\in Q(\gamma)$. Clearly, one can discard all orbit cones being a union or intersection of the remaining ones. However, the approach in \cite{gitfan_symmetry} of removing all non\=/minimal cones in $\Omega_\ideal^{(k)}$ with respect to inclusion is flawed. Fortunately, \cite[Theorem 1.1]{gitfan_symmetry} still holds as all non-minimal orbit cones are unions of minimal ones for the \msix{} example.
+
+Consider the following scenario. Let $f = x_1x_3+x_2x_4+x_5\in \field[x_1,x_2,x_3,x_4,x_5]$. Set  $\ideal := \langle x_3, x_4\rangle \cdot \langle f\rangle$ and
+$$Q = (q_1, q_2, q_3, q_4, q_5) := \begin{pmatrix}
+0 & 0 & 1 & 1 & 1 \\
+1 & 0 & 0 & 1 & 1 \\
+1 & 1 & 1 & 1 & 2 
+\end{pmatrix}.$$
+
+It is easy to see that the matrix $Q$ is of full rank 3 and that $f$ and thus $\ideal$ are homogeneous with respect to the $\integer^3$\=/grading induced by $Q$. Furthermore, $\ideal$ does not contain any monomials. Overall, $\ideal$ and $Q$ constitute a valid setup in the sense of section~\ref{section:setup}. The $\ideal$-faces with full dimensional image in $Q(\gamma)$ are given by
+\begin{align*}
+\gamma_1 &:=\langle e_1, e_2, e_5\rangle \\
+\gamma_2 &:=\langle e_1, e_2, e_3, e_5\rangle \\
+\gamma_3 &:=\langle e_1, e_2, e_4, e_5\rangle \\
+\gamma_4 &:=\langle e_1, e_3, e_4, e_5\rangle \\
+\gamma_5 &:=\langle e_2, e_3, e_4, e_5\rangle \\
+\gamma_6 &:=\langle e_1, e_2, e_3, e_4\rangle \\
+\gamma_7 &:=\langle e_1, e_2, e_3, e_4, e_5\rangle
+\end{align*}
+and may be computed manually by taking all faces $\gamma_0\preceq \gamma$ with dimension $\geq 3$ and identifying those such that $\ideal_{\gamma_0}$ does not contain a monomial.
+
+The orbit cones $Q(\gamma_j)\in \rational^3_{z_1,z_2,z_3}$ yield the following polytopes when intersecting them with the $\{z_3 = 1\}$\=/plain:
+
+\psset{xunit=2cm,yunit=2cm}
+\begin{minipage}{.33\textwidth}\centering
+	\begin{pspicture}(-0.5, -0.5)(1.25, 1.25)
+	\psaxes{->}(0,0)(1.25,1.25)
+	\psgrid[griddots=20,subgriddots=10,subgriddiv=2,gridlabels=0pt](2,2)
+	\pspolygon[fillstyle=solid,fillcolor=red,opacity=0.4](0,1)(0,0)(0.5,0.5)
+	\rput(0.6,0.75){$Q(\gamma_1)$}
+	\end{pspicture}
+\end{minipage}
+\begin{minipage}{.33\textwidth}\centering
+	\begin{pspicture}(-0.5, -0.5)(1.25, 1.25)
+	\psaxes{->}(0,0)(1.25,1.25)
+	\psgrid[griddots=20,subgriddots=10,subgriddiv=2,gridlabels=0pt](2,2)
+	\pspolygon[fillstyle=solid,fillcolor=orange,opacity=0.4](0,1)(0,0)(1,0)
+	\rput(0.35,0.25){$Q(\gamma_2)$}
+	\end{pspicture}
+\end{minipage}
+\begin{minipage}{.33\textwidth}\centering
+	\begin{pspicture}(-0.5, -0.5)(1.25, 1.25)
+	\psaxes{->}(0,0)(1.25,1.25)
+	\psgrid[griddots=20,subgriddots=10,subgriddiv=2,gridlabels=0pt](2,2)
+	\pspolygon[fillstyle=solid,fillcolor=orange,opacity=0.4](0,1)(0,0)(1,1)
+	\rput(0.35,0.7){$Q(\gamma_3)$}
+	\end{pspicture}
+\end{minipage}
+\begin{minipage}{.33\textwidth}\centering
+	\begin{pspicture}(-0.5, -0.5)(1.25, 1.25)
+	\psaxes{->}(0,0)(1.25,1.25)
+	\psgrid[griddots=20,subgriddots=10,subgriddiv=2,gridlabels=0pt](2,2)
+	\pspolygon[fillstyle=solid,fillcolor=red,opacity=0.4](0,1)(1,0)(1,1)
+	\rput(0.65,0.7){$Q(\gamma_4)$}
+	\end{pspicture}
+\end{minipage}
+\begin{minipage}{.33\textwidth}\centering
+	\begin{pspicture}(-0.5, -0.5)(1.25, 1.25)
+	\psaxes{->}(0,0)(1.25,1.25)
+	\psgrid[griddots=20,subgriddots=10,subgriddiv=2,gridlabels=0pt](2,2)
+	\pspolygon[fillstyle=solid,fillcolor=red,opacity=0.4](0,0)(1,0)(1,1)
+	\rput(0.65,0.25){$Q(\gamma_5)$}
+	\end{pspicture}
+\end{minipage}
+\begin{minipage}{.33\textwidth}\centering
+	\begin{pspicture}(-0.5, -0.5)(1.25, 1.25)
+	\psaxes{->}(0,0)(1.25,1.25)
+	\psgrid[griddots=20,subgriddots=10,subgriddiv=2,gridlabels=0pt](2,2)
+	\pspolygon[fillstyle=solid,fillcolor=orange,opacity=0.4](0,0)(0,1)(1,1)(1,0)
+	\rput(0.5,0.66){$Q(\gamma_6)$}
+	\rput(0.5,0.33){$Q(\gamma_7)$}
+	\end{pspicture}
+\end{minipage}
+
+When taking all orbit cones into account, the intersection of the resultant GIT fan and the $\{z_3 = 1\}$\=/plain yields
+
+\begin{center}
+	\begin{pspicture}(-0.5, -0.5)(1.25, 1.25)
+	\psaxes{->}(0,0)(1.25,1.25)
+	\psgrid[griddots=20,subgriddots=10,subgriddiv=2,gridlabels=0pt](2,2)
+	\pspolygon[fillstyle=solid,fillcolor=orange,opacity=0.4](0,0)(0,1)(1,1)(1,0)
+	\psline(1,0)(0,1)
+	\psline(0,0)(1,1)
+	\end{pspicture}
+\end{center}
+
+However, when considering only the red orbit cones, which are minimal with respect to inclusion, all full dimensional intersections of orbit cones containing a common point -- that is maximal GIT cones -- have the following form when intersecting them with the $\{z_3 = 1\}$\=/plain:
+
+\begin{minipage}{.25\textwidth}\centering
+	\begin{pspicture}(-0.5, -0.5)(1.25, 1.25)
+	\psaxes{->}(0,0)(1.25,1.25)
+	\psgrid[griddots=20,subgriddots=10,subgriddiv=2,gridlabels=0pt](2,2)
+	\pspolygon[fillstyle=solid,fillcolor=orange,opacity=0.4](0,1)(0,0)(0.5,0.5)
+	\end{pspicture}
+\end{minipage}
+\begin{minipage}{.25\textwidth}\centering
+	\begin{pspicture}(-0.5, -0.5)(1.25, 1.25)
+	\psaxes{->}(0,0)(1.25,1.25)
+	\psgrid[griddots=20,subgriddots=10,subgriddiv=2,gridlabels=0pt](2,2)
+	\pspolygon[fillstyle=solid,fillcolor=orange,opacity=0.4](1,1)(1,0)(0.5,0.5)
+	\end{pspicture}
+\end{minipage}
+\begin{minipage}{.25\textwidth}\centering
+	\begin{pspicture}(-0.5, -0.5)(1.25, 1.25)
+	\psaxes{->}(0,0)(1.25,1.25)
+	\psgrid[griddots=20,subgriddots=10,subgriddiv=2,gridlabels=0pt](2,2)
+	\pspolygon[fillstyle=solid,fillcolor=orange,opacity=0.4](0,1)(1,0)(1,1)
+	\end{pspicture}
+\end{minipage}
+\begin{minipage}{.25\textwidth}\centering
+	\begin{pspicture}(-0.5, -0.5)(1.25, 1.25)
+	\psaxes{->}(0,0)(1.25,1.25)
+	\psgrid[griddots=20,subgriddots=10,subgriddiv=2,gridlabels=0pt](2,2)
+	\pspolygon[fillstyle=solid,fillcolor=orange,opacity=0.4](0,0)(1,0)(1,1)
+	\end{pspicture}
+\end{minipage}
+
+It is evident that these cannot constitute the maximal cones of a fan. Most of all, we are not able to recover the GIT fan. Note that $Q(\gamma_1)$, $Q(\gamma_6)$ and $Q(\gamma_7)$ are the only orbit cones that may be discarded. They are either the union or intersection of a subset of $Q(\gamma_2),\dots, Q(\gamma_5)$.
+
