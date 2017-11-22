@@ -18,7 +18,7 @@ First, we describe the formal setup and introduce the notation being used in the
 \section{The setup}
 \label{section:setup}
 
-Let $\field$ be an algebraically closed field.
+Let $\field$ be an algebraically closed field of characteristic zero.
 \index{K@$\field$}%
 We consider an affine variety $X$ that is embedded into $\field^r$ such that $X$ is the vanishing locus of an monomial free ideal $\ideal\subseteq \field[x_1,\dots,x_r]\eqdef \field[\mathbf{x}]$.
 \index{X@$X$}%
@@ -30,10 +30,10 @@ form the columns of a matrix $Q\in\field^{k\times r}$ of rank $k$.
 \index{k@$k$}%
 \index{Q@$Q$}%
 \index{qi@$q_i$}%
-Hence, the coordinate ring $\faktor{\field[\mathbf{x}]}{\ideal}$ becomes a $\integer^k$\=/graded ring. We obtain an action of the $k$\=/dimensional algebraic torus $H \defeq \spec(\field[q_1,\dots,q_r])\cong (\field^*)^k$ on $X$ given by
+Hence, the coordinate ring $\faktor{\field[\mathbf{x}]}{\ideal}$ becomes a $\integer^k$\=/graded ring. By Remark~\ref{remark:torus_from_integral_vectors} and Example~\ref{example:torus_group_action}, we obtain an action of the $k$\=/dimensional algebraic torus $H \defeq \spec(\field[\langle q_1,\dots,q_r\rangle_\rational])\cong (\field^*)^k$ on $X$ given by
 \index{H@$H$}%
 $$(\field^*)^k \times X \rightarrow X,\quad (t,P) \mapsto (t^{q_1}P_1,\dots,t^{q_r}P_r).$$
-Every algebraic torus acting on $X$ may be realised in this way \todo{Referenz}.
+Note that every algebraic torus acting on $X$ may be realised in this way \todo{Referenz, ggf. Example 3.1 in Dolgachev ausarbeiten (S. 38)}.
 
 \section{Computing orbit cones}
 
