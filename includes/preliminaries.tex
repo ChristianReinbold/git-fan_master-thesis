@@ -14,36 +14,83 @@ In this section we extend the notion of groups acting on sets to actions on obje
 \end{defi}
 
 \begin{ex}
+	\label{example:algebraic_torus}
 	The affine variety $$(\field^*)^n \cong V(t_1t_1^{-1} - 1,\dots, t_nt_n^{-1}-1)\subseteq\field[t_1,t_1^{-1},...,t_n,t_n^{-1}]$$
 	is an affine algebraic group via the group law
 	$$m\colon (\field^*)^n \times (\field^*)^n \rightarrow (\field^*)^n,\quad ((r_1,\dots,r_n),(s_1,\dots,s_n)) \mapsto (r_1s_1,\dots,r_ns_n).$$
 	Note that $m$ is polynomial when formulated over $\field[t_1,t_1^{-1},...,t_n,t_n^{-1}]$.
+	
+	We claim that its comultiplication $m^*$, that is the pullback of the multiplication $m$, is given by
+	$$\O((\field^*)^n) \rightarrow \O((\field^*)^n) \tensor \O((\field^*)^n),\quad \mathbf{t}^\alpha \mapsto \mathbf{t}^\alpha \tensor \mathbf{t}^\alpha,\quad \forall \alpha\in\integer^n.$$
+	Clearly, this is a $\field$\=/algebra homormophism. It suffices to check equality with $m^*$ on a set of generators $\{\mathbf{t}^\alpha\mid \alpha\in\integer^n\}$. Now, 
+	$$\mathbf{t}^\alpha \tensor \mathbf{t}^\alpha (P, Q) = P^\alpha\cdot Q^\alpha = (PQ)^\alpha =  (\mathbf{t}^\alpha \circ m) (P,Q) = m^*(\mathbf{t}^\alpha) (P,Q)$$ holds for all $\alpha\in\integer^n$ and $P,Q\in(\field^*)^n$. The claim follows.
 \end{ex}
 
 \begin{defi}
 	An affine algebraic group $G$ is called \emph{(algebraic) torus of dimension $n$} iff there exists $n>0$ such that $G$ is isomorphic to the affine algebraic group $(\field^*)^n$.
 \end{defi}
 
-\begin{remark}
-	\label{remark:torus_from_integral_vectors}
-	Let $\field$ be a algebraically closed field of characteristic zero. Then any finite set $\{v_1,\dots,v_r\}\subseteq\integer^k$ of integral vectors constitutes an algebraic torus of the same dimension as the linear subspace $L = \langle v_1,\dots,v_r\rangle_\rational$. Denote the dimension of $L$ by $d$. Then there exists an $\rational$-linear isomorphism such that $L\cong \rational^d$. In particular, this isomorphism translates to a $\field$\=/algebra isomorphism $\field[L] \cong \field[\rational^d]$ when $\rational$ is embedded into $\field$ as its prime field.
-	It follows that $\spec(\field[L])$ is an algebraic torus via
-	$$\spec(\field[L]) \cong \spec(\field[\rational^d]) =(\field^*)^d.$$
-\end{remark}
+%\begin{remark}
+%	\label{remark:torus_from_integral_vectors}
+%	Let $\field$ be a algebraically closed field of characteristic zero. Then any finite set $\{v_1,\dots,v_r\}\subseteq\integer^k$ of integral vectors constitutes an algebraic torus of the same dimension as the linear subspace $L = \langle v_1,\dots,v_r\rangle_\rational$. Denote the dimension of $L$ by $d$. Then there exists an $\rational$-linear isomorphism such that $L\cong \rational^d$. In particular, this isomorphism translates to a $\field$\=/algebra isomorphism $\field[L] \cong \field[\rational^d]$ when $\rational$ is embedded into $\field$ as its prime field.
+%	It follows that $\spec(\field[L])$ is an algebraic torus via
+%	$$\spec(\field[L]) \cong \spec(\field[\rational^d]) =(\field^*)^d.$$
+%\end{remark}
 
 \begin{defi}[Algebraic Group action]
 	Let $G$ be an affine algebraic group and $X$ be an affine variety. An (algebraic) group action of $G$ on $X$, denoted by $G\acts X$, is a morphism $\varphi\colon G\times X \rightarrow X$ such that $\varphi$ defines a set\=/theoretic group action of $G$ on $X$ via
 	$$g\cdot x \defeq \varphi(g,x).$$
 \end{defi}
 
-\begin{ex}
-	\label{example:torus_group_action}
-	Let $X = V(\ideal)\subseteq\field[x_1,\dots,x_r]$ be an affine variety such that its coordinate ring permits a $\integer^k$\=/grading. This grading extends to a $\integer^k$\=/grading of $\field[\mathbf{x}]$  via
-	$$\deg(x_i) \defeq \deg(\overline{x_i})\quad 1\leq i \leq r$$
-	so that $\ideal$ becomes homogeneous. The map
-	$$*\colon(\field^*)^k \times X \rightarrow X,\quad (t,P) \mapsto (t^{q_1}P_1,\dots,t^{q_r}P_r)$$
-	defines a group action. Clearly, the function is polynomial and the identity and compatibility axioms hold. It remains to check that it is well defined. Since we have $f(t*P) = t^q f(P)$ for all homogeneous polynomials $f$ of degree $q\in\integer^k$, for any point $P$ vanishing on the homogeneous ideal $\ideal$, $t*P$ also vanishes on $\ideal$.
-\end{ex}
+%\begin{ex}
+%	\label{example:torus_group_action}
+%	Let $X = V(\ideal)\subseteq\field[x_1,\dots,x_r]$ be an affine variety such that its coordinate ring permits a $\integer^k$\=/grading. This grading extends to a $\integer^k$\=/grading of $\field[\mathbf{x}]$  via
+%	$$\deg(x_i) \defeq \deg(\overline{x_i})\quad 1\leq i \leq r$$
+%	so that $\ideal$ becomes homogeneous. The map
+%	$$*\colon(\field^*)^k \times X \rightarrow X,\quad (t,P) \mapsto (t^{q_1}P_1,\dots,t^{q_r}P_r)$$
+%	defines a group action. Clearly, the function is polynomial and the identity and compatibility axioms hold. It remains to check that it is well defined. Since we have $f(t*P) = t^q f(P)$ for all homogeneous polynomials $f$ of degree $q\in\integer^k$, for any point $P$ vanishing on the homogeneous ideal $\ideal$, $t*P$ also vanishes on $\ideal$.
+%\end{ex}
+
+\begin{construction}
+	\label{construction:algebraic_torus}
+	We give a concrete description of an algebraic torus $T$ of dimension $n$ acting on an affine variety $X$ via a morphism $\varphi\colon G\times X \rightarrow X$. It will turn out that group actions of $n$\=/dimensional tori on $X$ correspond to $\integer^n$ gradings on $\O(X)$.
+	
+	W.l.o.g. assume that $T = (\field^*)^n$ with the group law $m$ as specified in Example~\ref{example:algebraic_torus}. Note that the regular functions of $T$ are given by $\field[\mathbf{t},\mathbf{t}^{-1}]$ and the comultiplication $\varphi^*$ is injective since any regular function of $X$ vanishing on $GX$ also vanishes on $X$ by the identity axiom. Furthermore, we have $$\O(T)\tensor\O(T)\tensor\O(X)\cong\O(X)[\mathbf{t},\mathbf{t}^{-1},\mathbf{u},\mathbf{u}^{-1}]\quad\text{via}\quad\mathbf{t}^\alpha \tensor \mathbf{t}^\beta \tensor f \mapsto f\mathbf{t}^\alpha\mathbf{u}^\beta.$$
+	For $\alpha\in\integer^n$, define
+	$$\O(X)_\alpha \defeq \{f\in\O(X)\mid \varphi^*(f) = \mathbf{t}^\alpha \tensor f\},$$
+	which is a submodule of $\O(X)$. Let $\sum_{\alpha\in I} f_\alpha$ be a finite linear combination of zero with $f_\alpha\in\O(X)_\alpha$. It follows that
+	$$0 = \varphi^*(0) = \varphi^*\left(\sum_{\alpha\in I} f_\alpha\right) = \sum_{\alpha\in I} \varphi^*(f_\alpha) = \sum_{\alpha\in I} \mathbf{t}^\alpha \tensor f_\alpha.$$
+	Coefficient comparison in $\O(X)[\mathbf{t},\mathbf{t}^{-1},\mathbf{u},\mathbf{u}^{-1}]$ shows that $f_\alpha = 0$. Hence, the sum
+	$$\bigoplus_{\alpha\in\integer^n} \O(X)_\alpha \subseteqq \O(X)$$
+	is direct.
+
+	Let $f\in \O(X)$ and write $\varphi^*(f)$ as a finite linear combination
+	$$\varphi^*(f) = \sum_{\alpha\in I} \mathbf{t}^\alpha \tensor f_\alpha.$$
+	When moving to $\field$\=/algebra homomorphisms, the compatibility axiom translates to
+	$$(m^* \tensor \id_{\O(X)}) \circ \varphi^* = (\id_{\O(T)} \tensor \varphi^*) \circ \varphi^*.$$
+	Hence, we obtain
+	$$\sum_{\alpha\in I} \mathbf{t}^\alpha \tensor \mathbf{t}^\alpha \tensor f_\alpha = (m^* \tensor \id_{\O(X)}) \circ \varphi^*(f) =  (\id_{\O(T)} \tensor \varphi^*) \circ \varphi^*(f) = \sum_{\alpha\in I}\mathbf{t}^\alpha \tensor \varphi^*(f_\alpha).$$
+	Comparing coefficients yields $\varphi^*(f_\alpha) = \mathbf{t}^\alpha \otimes f_\alpha$, that is $f_\alpha\in \O(X)_\alpha$. Furthermore,
+	$$\varphi^*\left(\sum_{\alpha\in I} f_\alpha\right) = \sum_{\alpha\in I} \varphi^*(f_\alpha) = \sum_{\alpha\in I} \mathbf{t}^\alpha \tensor f_\alpha = \varphi^*(f).$$
+	Injectivity of $\varphi^*$ implies that
+	$$f = \sum_{\alpha\in I} f_\alpha,$$
+	proving that
+	$$\bigoplus_{\alpha\in\integer^n} \O(X)_\alpha = \O(X).$$
+	Since $\varphi^*$ preserves the multiplication of $\O(X)$, it holds that $\O(X)_\alpha \O(X)_\beta \subseteq \O(X)_{\alpha+\beta}$. Hence, $\O(X)$ becomes a $\integer^n$\=/graded $\field$\=/algebra. Conversely, every $\integer^n$\=/grading on $\O(X)$ determines a group action $\psi$ of $T$ on $X$ with the corresponding coaction defined by 
+	$$\psi^*(f) = \mathbf{t}^{\deg(f)}\tensor f\quad \forall f\in\O(X)\ \mathrm{homogeneous}.$$
+	
+	By taking a finite set $\{g_1,\dots,g_m\}$ of $\integer^n$\=/homogeneous generators of $\O(X)$, we obtain an embedding $X\subseteq\field^m$ such that the vanishing ideal $\ideal \defeq I(X)\subseteq\field[x_1,\dots,x_m]$ of $X$ is homogeneous w.r.t. the grading
+	$$\deg(x_i) = \deg(g_i)\in\integer^n$$
+	on $\field[x_1,\dots,x_m]$.
+	By construction, we have $\varphi^*(g_i) = \mathbf{t}^{\deg(g_i)} \tensor g_i$ which translates to the coaction  $\psi^*(x_i) = \mathbf{t}^{\deg(g_i)} \tensor x_i$ in $\field[x_1,\dots,x_m] / \ideal$.
+	The group action is recovered as follows:
+	$$T \times X \longrightarrow X,\quad (\mathbf{t},P) \mapsto (\psi^*(x_1)(\mathbf{t},P),\dots,\psi^*(x_m)(\mathbf{t},P)) = (\mathbf{t}^{\deg(g_1)}P_1,\dots,\mathbf{t}^{\deg(g_m)}P_m).$$
+	
+	We conclude that any action of a torus of dimension $n$ on an affine variety $X$ may be described by a set of integral vectors $q_i\in\integer^n$, $1\leq i \leq m$, and a suitable embedding of $X$ in $\field^m$ such that its vanishing ideal is homogeneous w.r.t.
+	$$\deg(x_i) = q_i,\quad 1\leq i \leq m.$$
+	The group action is given by
+	$$(\field^*)^n \times X \longrightarrow X,\quad (\mathbf{t},P) \mapsto (\mathbf{t}^{q_1}P_1,\dots,\mathbf{t}^{q_m}P_m).$$
+\end{construction}
 
 \begin{remark}
 	Let $G$ be an affine algebraic group acting on an affine variety $X$. Let $x\in X$. The stabiliser subgroup $G_x$ is a closed, affine subvariety since it is the locus of $I(X)$ and the components of $g\mapsto gx - x$. It follows that $G_x$ is an affine algebraic subgroup.
@@ -58,6 +105,17 @@ In this section we extend the notion of groups acting on sets to actions on obje
 	We say that $f\in\O_X(U)$ is \emph{$G$\=/invariant} iff $gf = f$ holds for all $g\in G$. The subalgebra of $G$\=/invariant functions is denoted by $\O_X(U)^G$.
 	\index{OXUG@$\O_X(U)^G$}%
 \end{remark}
+
+\begin{ex}
+	\label{example:regular_functions_torus_group_action}
+	Consider an algebraic group action $\varphi\colon T \rightarrow X$ of a torus $T$ of dimension $n$ on an affine variety $X$, By Construction~\ref{construction:algebraic_torus}, $\O(X)$ is a $\integer^n$\=/graded $\field$\=/algebra. For any homogeneous $f\in\O(X)$ and $g\in (\field^*)^n$, we have
+	$$(g^{-1}f)(x) = f \circ \varphi(g,x) = \varphi^*(f)(g,x) = (\mathbf{t}^{\deg(f)} \tensor f)(g,x) = g^{\deg(f)}\cdot f(x)\quad \forall x\in X.$$
+	In particular, it is easy to see that
+	$$g^{-1}f = g^\alpha f\quad \forall g\in (\field^*)^n \ \Longleftrightarrow \ f\in\O(X)_\alpha,$$
+	where $\alpha\in\integer^n$, the left multiplication is given by the group action and the right one is the scalar multiplication of $\O(X)$ as $\field$\=/module.
+	For this reason it follows that
+	$$ \O(X)^T = \O(X)_0.$$
+\end{ex}
 
 \section{Good quotients}
 When an algebraic group $G$ acts on an affine variety $X$, naturally one questions if the orbit space $X/G$ defined by the group action can be equipped with the structure of an variety such that the quotient map $p\colon X\rightarrow X/G$ becomes a morphism. Consider the following example.
@@ -190,7 +248,7 @@ In this section, we introduce the concept of linearised vector bundles and give 
 \end{defi}
 
 \begin{remark}
-	The tensor product $L_1 \otimes L_2$ of $G$\=/linearised line bundles $L_1$ and $L_2$ over $X$ with $G$\=/linearisations $f_1$, $f_2$ is the $G$\=/linearised line bundle that is obtained by taking the tensor product on the fibers. Its group action is given by $f_1 \otimes f_2$. Note that $L_1^{\otimes n}$ is isomorphic to the line bundle $L_1$ with the $G$\=/linearisation
+	The tensor product $L_1 \tensor L_2$ of $G$\=/linearised line bundles $L_1$ and $L_2$ over $X$ with $G$\=/linearisations $f_1$, $f_2$ is the $G$\=/linearised line bundle that is obtained by taking the tensor product on the fibers. Its group action is given by $f_1 \tensor f_2$. Note that $L_1^{\tensor n}$ is isomorphic to the line bundle $L_1$ with the $G$\=/linearisation
 	$$G\times L_1 \longrightarrow L_1,\quad (g, \ell) \mapsto f(g^n, \ell)$$
 \end{remark}
 
@@ -208,7 +266,7 @@ Now we are ready to describe the construction of semistable and stable points in
 \begin{defi}
 	Let $L$ be a $G$\=/linearised, ample line bundle over $X$. A point $x\in X$ is called
 	\begin{itemize}
-		\item \emph{semistable} if there exists a $G$\=/invariant global section $s\in\Gamma(X,L^{\otimes n})^G$ for some $n\in\natural$ such that $s(x)\neq 0$, where $0$ is the origin in the fiber $\pi^{-1}(x)$.
+		\item \emph{semistable} if there exists a $G$\=/invariant global section $s\in\Gamma(X,L^{\tensor n})^G$ for some $n\in\natural$ such that $s(x)\neq 0$, where $0$ is the origin in the fiber $\pi^{-1}(x)$.
 		\item \emph{stable} if its stabiliser $G_x$ is finite and it is semistable via a global section $s$ such that all $G$\=/orbits in 
 		$$X_s = X\setminus V(s) = \{p\in X\mid s(p) \neq 0 \}$$
 		are closed.
@@ -218,7 +276,7 @@ Now we are ready to describe the construction of semistable and stable points in
 
 \begin{remark}
 	By Mumford, the $G$\=/invariant set $X^{ss}(L)$ permits a good quotient $X^{ss}(L)\sslash G$, called \emph{GIT quotient}. It is the projective variety of the graded ring
-	$$\bigoplus_{n\geq 0} \Gamma(X,L^{\otimes n})^G.$$
+	$$\bigoplus_{n\geq 0} \Gamma(X,L^{\tensor n})^G.$$
 	If  $X^{s}(L)$ is non\=/empty, $X^{ss}(L)\sslash G$ is an almost geometric quotient with the restriction to $X^{s}(L)$ being a geometric quotient.
 \end{remark}
 
