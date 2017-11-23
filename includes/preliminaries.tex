@@ -249,12 +249,12 @@ In this section, we introduce the concept of linearised vector bundles and give 
 
 \begin{remark}
 	The tensor product $L_1 \tensor L_2$ of $G$\=/linearised line bundles $L_1$ and $L_2$ over $X$ with $G$\=/linearisations $f_1$, $f_2$ is the $G$\=/linearised line bundle that is obtained by taking the tensor product on the fibers. Its group action is given by $f_1 \tensor f_2$. Note that $L_1^{\tensor n}$ is isomorphic to the line bundle $L_1$ with the $G$\=/linearisation
-	$$G\times L_1 \longrightarrow L_1,\quad (g, \ell) \mapsto f(g^n, \ell)$$
+	$$G\times L_1 \longrightarrow L_1,\quad (g, \ell) \mapsto f_1(g^n, \ell)$$
 \end{remark}
 
 \begin{remark}[Group action on sections, \phantom{}{\cite[Remark 1.7]{git_equivalence}}]
 	Let $L$ be a $G$\=/linearised line bundle over $X$. For each $G$\=/invariant open subset $U\subseteq X$ we obtain a group action of $G$ on the space $\Gamma(U,L)$ of sections of over $U$ by setting
-	$$g\cdot s(x) \defeq g\cdot(s(g^{-1}x)).$$
+	$$(g\cdot s)(x) \defeq g\cdot s(g^{-1}x).$$
 	The identity and compatibility axioms are verified easily. We check that $g\cdot s$ again is a section in $\Gamma(U,L)$. It is well defined on $U$ since we have $g^{-1}x\in U$ for all $g\in G$, $x\in U$. Clearly, $g\cdot s$ is the composition of morphisms and thus a morphism itself.
 	
 	The subspace of $G$\=/invariant sections of $L$ over $U$ is denoted by $\Gamma(U,L)^G$.
@@ -265,12 +265,12 @@ Now we are ready to describe the construction of semistable and stable points in
 
 \begin{defi}
 	Let $L$ be a $G$\=/linearised, ample line bundle over $X$. A point $x\in X$ is called
-	\begin{itemize}
+	\begin{enumerate}[label={\upshape(\roman*)}]
 		\item \emph{semistable} if there exists a $G$\=/invariant global section $s\in\Gamma(X,L^{\tensor n})^G$ for some $n\in\natural$ such that $s(x)\neq 0$, where $0$ is the origin in the fiber $\pi^{-1}(x)$.
 		\item \emph{stable} if its stabiliser $G_x$ is finite and it is semistable via a global section $s$ such that all $G$\=/orbits in 
 		$$X_s = X\setminus V(s) = \{p\in X\mid s(p) \neq 0 \}$$
 		are closed.
-	\end{itemize}
+	\end{enumerate}
 	The sets of semistable points and stable points are denoted by $X^{ss}(L)$ and $X^{s}(L)$ respectively.
 \end{defi}
 
