@@ -1,15 +1,29 @@
-\chapter{Useful lemmata}
+\chapter{Lemmas in the field of convex geometry}
+
+\begin{lemmaApp}
+	\label{lemma:cones_in_cones}
+	Let $\tau$ and $\sigma$ be convex cones with $\tau\subseteq \sigma$. Then there exists a unique face $\vartheta$ of $\sigma$ such that $\tau^\circ \subseteq \vartheta^\circ$. If $f$ is a face of $\sigma$, the condition $\tau^\circ \cap f^\circ \neq \emptyset$ holds if and only if $f=\vartheta$.
+	
+	Furthermore, $\tau \subseteq \vartheta$ holds.
+\end{lemmaApp}
+\begin{proof}
+	Assume that there exist two distinct faces $f_1,f_2$ of $\sigma$ defined by linear functionals $\lambda_1$, $\lambda_2$ such that $\tau^\circ \cap f_1^\circ \neq \emptyset \neq \tau^\circ \cap f_2^\circ$. Let $x_i\tau^\circ \cap f_i^\circ$. Because of $x_1, x_2$ being located in the relative interior of $\tau$, we can choose a small $\varepsilon > 0$ such that for all $s\in[-\varepsilon,1+\varepsilon]$ the point $sx_1 + (1-s)x_2$ is contained in $\tau$. Then the affine linear map $s\mapsto \langle \lambda_2, sx_1 + (1-s)x_2\rangle$ maps $0$ to $0$ and $1$ to a value greater than $0$. However, it would map $-\varepsilon$ to a value smaller than $0$, contradicting $-\varepsilon x_1 + (1 + \varepsilon)x_2\in\tau\subseteq\sigma$.
+	
+	We conclude that there exists only one face $\vartheta$ such that $\tau^\circ \cap \vartheta^\circ \neq \emptyset$. Since the set of relative interiors of faces of $\sigma$ partition $\sigma$, we obtain $\tau^\circ \subseteq \vartheta^\circ$.
+	
+	The remaining claim $\tau \subseteq \vartheta$ follows by taking closures.
+\end{proof}
 
 \begin{lemmaApp}
 	\label{lemma:convex_fan_maximal_cones}
-	Let $\Sigma\subseteq\mathbb{R}^k$ be a $k$-dimensional fan with convex support. Then every cone in $\Sigma$ is a face of a cone in $\Sigma^{(k)}$. In particular, $\Sigma$ is uniquely determined by $\Sigma^{(k)}$.
+	Let $\Sigma\subseteq\mathbb{R}^k$ be a $k$-dimensional quasifan with convex support. Then every cone in $\Sigma$ is a face of a cone in $\Sigma^{(k)}$. In particular, $\Sigma$ is uniquely determined by $\Sigma^{(k)}$.
 \end{lemmaApp}
 \begin{proof}
-	Let $\tau\in\Sigma$ and choose a point $p\in\relint(\tau)$. We select hyperplanes $H_\theta$ for all $\theta\in\Sigma\setminus\Sigma^{(k)}$ such that $\theta\subseteq H_\theta$. Then we have
+	Let $\tau\in\Sigma$ and choose a point $p\in\tau^\circ$. We select hyperplanes $H_\theta$ for all $\theta\in\Sigma\setminus\Sigma^{(k)}$ such that $\theta\subseteq H_\theta$. Then we have
 	$$S \defeq |\Sigma| \setminus \left(\bigcup_{\theta\in\Sigma\setminus\Sigma^{(k)}} H_\theta\right) \subseteq \bigcup_{\sigma\in\Sigma^{(k)}} \sigma \eqdef |\Sigma^{(k)}|.$$
 	Since $|\Sigma|$ has dimension $k$ and $S$ arises from $|\Sigma|$ by removing finitely many hyperplanes, $S$ has dimension $k$. For this reason we find $q\in S \setminus\{p\}$. By Bézout's theorem, every hyperplane $H_\theta$ intersects the line through $p$ and $q$ in at most one point. As $|\Sigma|$ is convex, the connecting line $\overline{pq}$ is contained in $|\Sigma|$ and $\overline{pq} \cap S$ emerges from $\overline{pq}$ by removing a finite amount of points. Hence, we find a sequence $(p_n)_{n\in\natural}\subseteq \overline{pq} \cap S$ such that $\lim\limits_{n\rightarrow\infty} p_n = p$. It follows that $p\in\overline{S}$. Since $|\Sigma^{(k)}|$ is closed as a finite union of closed sets, $p\in|\Sigma^{(k)}|$ holds. Let $\sigma\in\Sigma^{(k)}$ such that $p\in\sigma$. Then the common face of $\sigma$ and $\tau$ contains $p$ and thus has to be $\tau$. We conclude that $\tau\preceq\sigma$.
 	
-	Now, $\Sigma$ is uniquely determined by $\Sigma^{(k)}$ since fans are closed under taking faces.
+	Now, $\Sigma$ is uniquely determined by $\Sigma^{(k)}$ since quasifans are closed under taking faces.
 \end{proof}
 
 \chapter{Ideal quotients}
