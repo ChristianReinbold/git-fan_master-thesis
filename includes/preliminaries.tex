@@ -72,7 +72,7 @@ In this section we extend the notion of groups acting on sets to actions on obje
 	$$\sum_{\alpha\in I} \mathbf{t}^\alpha \tensor \mathbf{t}^\alpha \tensor f_\alpha = (m^* \tensor \id_{\O(X)}) \circ \varphi^*(f) =  (\id_{\O(T)} \tensor \varphi^*) \circ \varphi^*(f) = \sum_{\alpha\in I}\mathbf{t}^\alpha \tensor \varphi^*(f_\alpha).$$
 	Comparing coefficients yields $\varphi^*(f_\alpha) = \mathbf{t}^\alpha \otimes f_\alpha$, that is $f_\alpha\in \O(X)_\alpha$. Furthermore,
 	$$\varphi^*\left(\sum_{\alpha\in I} f_\alpha\right) = \sum_{\alpha\in I} \varphi^*(f_\alpha) = \sum_{\alpha\in I} \mathbf{t}^\alpha \tensor f_\alpha = \varphi^*(f).$$
-	Injectivity of $\varphi^*$ implies that
+	$\varphi^*$ being injective implies that
 	$$f = \sum_{\alpha\in I} f_\alpha,$$
 	proving that
 	$$\bigoplus_{\alpha\in\integer^n} \O(X)_\alpha = \O(X).$$
@@ -93,14 +93,14 @@ In this section we extend the notion of groups acting on sets to actions on obje
 \end{construction}
 
 \begin{remark}
-	Let $G$ be an affine algebraic group acting on an affine variety $X$. Let $x\in X$. The stabiliser subgroup $G_x$ is a closed, affine subvariety since it is the locus of $I(X)$ and the components of $g\mapsto gx - x$. It follows that $G_x$ is an affine algebraic subgroup.
+	Let $G$ be an affine algebraic group acting on an affine variety $X$. Let $x\in X$. The stabiliser subgroup $G_x$ is a closed, affine subvariety since it is the preimage of the closed point $\{x\}$ of the morphism $g\mapsto gx$. It follows that $G_x$ is an affine algebraic subgroup.
 \end{remark}
 
 \begin{remark}[Group action on regular functions]
 	If $\varphi$ is a group action of an affine algebraic group $G$ on an affine variety $X$, we obtain a group action of $G$ on the regular functions $K(X)$ of $X$ by
-	$$G\times K(X)\rightarrow K(X), \quad(g,\frac{f}{g}) \mapsto \frac{f\circ \varphi(g^{-1},\wildcard)}{g\circ \varphi(g^{-1},\wildcard)}\ .$$
+	$$G\times K(X)\rightarrow K(X), \quad(g,\frac{f}{h}) \mapsto \frac{f\circ \varphi(g^{-1},\wildcard)}{h\circ \varphi(g^{-1},\wildcard)}\ .$$
 	
-	If $U$ is a $G$\=/invariant open subset of $X$, that is $GU = G$, the restriction of $G\acts K(X)$ to $\O_X(U)$ yields a group action $G\acts\O_X(U)$. Note that if the denominator $g$ does not vanish on any point in $U$, then the same holds for $g\circ \varphi(g^{-1},\wildcard)$ as we have $$\varphi(g^{-1},\wildcard)(U) \subseteq GU = U.$$
+	If $U$ is a $G$\=/invariant open subset of $X$, that is $GU = G$, the restriction of $G\acts K(X)$ to $\O_X(U)$ yields a group action $G\acts\O_X(U)$. Note that if the denominator $h$ does not vanish on any point in $U$, then the same holds for $h\circ \varphi(g^{-1},\wildcard)$ as we have $$\varphi(g^{-1},\wildcard)(U) \subseteq GU = U.$$
 	
 	We say that $f\in\O_X(U)$ is \emph{$G$\=/invariant} iff $gf = f$ holds for all $g\in G$. The subalgebra of $G$\=/invariant functions is denoted by $\O_X(U)^G$.
 	\index{OXUG@$\O_X(U)^G$}%
@@ -108,7 +108,7 @@ In this section we extend the notion of groups acting on sets to actions on obje
 
 \begin{ex}
 	\label{example:regular_functions_torus_group_action}
-	Consider an algebraic group action $\varphi\colon T \rightarrow X$ of a torus $T$ of dimension $n$ on an affine variety $X$, By Construction~\ref{construction:algebraic_torus}, $\O(X)$ is a $\integer^n$\=/graded $\field$\=/algebra. For any homogeneous $f\in\O(X)$ and $g\in (\field^*)^n$, we have
+	Consider an algebraic group action $\varphi\colon T \rightarrow X$ of a torus $T$ of dimension $n$ on an affine variety $X$. By Construction~\ref{construction:algebraic_torus}, $\O(X)$ is a $\integer^n$\=/graded $\field$\=/algebra. For any homogeneous $f\in\O(X)$ and $g\in (\field^*)^n$, we have
 	$$(g^{-1}f)(x) = f \circ \varphi(g,x) = \varphi^*(f)(g,x) = (\mathbf{t}^{\deg(f)} \tensor f)(g,x) = g^{\deg(f)}\cdot f(x)\quad \forall x\in X.$$
 	In particular, it is easy to see that
 	$$g^{-1}f = g^\alpha f\quad \forall g\in (\field^*)^n \ \Longleftrightarrow \ f\in\O(X)_\alpha,$$
@@ -131,7 +131,7 @@ When an algebraic group $G$ acts on an affine variety $X$, naturally one questio
 \begin{defi}[Good quotient, \phantom{}{\cite[Definition 5.0.5]{cls}}]
 	Let $G$ be an affine algebraic group acting on an affine variety $X$. A $G$\=/invariant morphism $p\colon X \rightarrow Y$ is called a \emph{good (categorial) quotient}, if
 	\begin{enumerate}[label={\upshape(\roman*)}]
-		\item the pullback $p^*\colon \O_Y \rightarrow (p^*\O_X)^G$ is an isomorphism of sheaves, that is, for any open $U\subseteq X$ the pullback $p^*\colon \O_Y(U) \rightarrow \O_X(p^{-1}(U))^G$ is an isomorphism of $\field$\=/algebras, (note that preimages of $p$ are $G$\=/invariant)
+		\item the pullback $p^*\colon \O_Y \rightarrow (p^*\O_X)^G$ is an isomorphism of sheaves, that is, for any open $U\subseteq X$ the pullback $p^*\colon \O_Y(U) \rightarrow \O_X(p^{-1}(U))^G$ is an isomorphism of $\field$\=/algebras (note that preimages of $p$ are $G$\=/invariant),
 		\item $p(W)$ is closed for any $G$\=/invariant, closed $W\subseteq X$,
 		\item the images of disjoint $G$\=/invariant, closed subsets are disjoint.
 	\end{enumerate}
@@ -173,12 +173,12 @@ By Proposition~\ref{prop:good_quotient_properties}\ref{enum_item:good_quotient_s
 	Let $G, X$ be as above. A good quotient $p\colon X \rightarrow X\sslash G$ is called \emph{almost geometric quotient}, if there exists a $G$\=/invariant Zariski dense open subset $U$ of $X$ such that all $G$\=/orbits in $U$ are closed in $X$.
 \end{defi}
 
-Hence, we obtain an almost geometric quotient when the union of all non\=/closed orbits is not dense. Note that this is not the case in Example~\ref{example:bad_quotient}, so that the good quotient space $\complex^2 \sslash \complex^* = \{\text{pt}\}$ is no appropriate replacement for $X/G$.
+Note that the good quotient arising from Example~\ref{example:bad_quotient} is no almost geometric quotient. The maximal set containing closed orbits is given by $\{0\}$, which is not dense. On that account the good quotient space $\complex^2 \sslash \complex^* = \{\text{pt}\}$ is no appropriate replacement for $\complex^2/\complex^* = \mathbb{P}^1$.
 
 \section{GIT quotients}
-\ac{GIT} is a broad field in mathematics that targets the construction of quotients with respect to group actions in algebraic geometry. It originates from Mumford's work in 1965, see \cite{git}. By lifting the action of $G$ to ample line bundles on $X$, Mumford has been able to define open subsets, called semistable points, such that its good quotient space becomes projective. If so called stable points exist, the resultant quotient becomes an almost geometric quotient.
+\ac{GIT} is a broad field in mathematics that targets the construction of quotients with respect to group actions in algebraic geometry. It originates from Mumford's work in 1965, see \cite{git}. By lifting the action of $G$ to an ample line bundle on $X$, Mumford has been able to define an open subset of semistable points such that its good quotient space becomes projective. If so called stable points exist, the resultant quotient becomes an almost geometric quotient.
 
-In this section, we introduce the concept of linearised vector bundles and give the construction of the set of semistable points arising from an ample, linearised line bundle. Note that as in the previous sections, we only cover the affine case here.
+In this section, we introduce the concept of linearised line bundles and give the construction of the set of semistable points arising from an ample, linearised line bundle. Note that as in the previous sections, we only cover the affine case here.
 
 \begin{defi}[Vector bundle, \phantom{}{\cite[Definition 6.0.14]{cls}}]
 	An affine variety $V$ is a \emph{vector bundle of rank $r$} over an affine variety $X$ if there is a morphism $\pi\colon V \rightarrow X$ and an open cover $\{U_i\}_{i\in I}$ of $X$ such that
@@ -251,7 +251,7 @@ In this section, we introduce the concept of linearised vector bundles and give 
 
 \begin{remark}
 	\label{remark:linearised_line_bundle_tensor}
-	The tensor product $L_1 \tensor L_2$ of $G$\=/linearised line bundles $L_1$ and $L_2$ over $X$ with $G$\=/linearisations $f_1$, $f_2$ is the $G$\=/linearised line bundle that is obtained by taking the tensor product on the fibers. Its group action is given by $f_1 \tensor f_2$. Note that $L_1^{\tensor n}$ is isomorphic to the line bundle $L_1$ with the $G$\=/linearisation
+	The tensor product $L_1 \tensor L_2$ of $G$\=/linearised line bundles $L_1$ and $L_2$ over $X$ with $G$\=/linearisations $f_1$, $f_2$ is the $G$\=/linearised line bundle that is obtained by taking the tensor product on the fibers. Its group action is given by tensoring the actions $f_1$ and $f_2$ restricted to the fibers. Note that $L_1^{\tensor n}$ is isomorphic to the line bundle $L_1$ with the $G$\=/linearisation
 	$$G\times L_1 \longrightarrow L_1,\quad (g, \ell) \mapsto f_1(g^n, \ell)$$
 \end{remark}
 
@@ -296,10 +296,13 @@ For the remainder of this section assume that $X$ is an affine variety with a $\
 	The $T$\=/linearisations of the trivial line bundle 
 	$$\pi\colon X \times \field \rightarrow X$$
 	correspond one\=/to\=/one to vectors in $\integer^k$, where $w\in\integer^k$ defines the $G$\=/linearisation
-	$$t\cdot(x,z) \defeq (t\cdot x, t^w z).$$
+	\begin{equation}
+		\label{equa:torus_linearisation}
+		t\cdot(x,z) \defeq (t\cdot x, t^w z).
+	\end{equation}
 \end{lemma}
 \begin{proof}
-	One easily computes that $w\in\integer^k$ defines a $T$\=/linearisation as above. Now let $f:T\times X\times\field \rightarrow X\times\field$ be an arbitrary $T$\=/linearisation. Let $p_X$ and $p_\field$ be the projections of $X\times\field$ to $X$ and $\field$ respectively. Since $f$ is defined such that $\pi$ is equivariant, it follows that $p_X \circ f (t, x, z) = tx$. Furthermore, $p_\field \circ f(t,x,z)$ is linear w.r.t. $z$. For this reason there exists a morphism $c\colon T \times X \rightarrow \field$ such that
+	One easily computes that (\ref{equa:torus_linearisation}) defines a $T$\=/linearisation for all $w\in\integer^k$. Now let $f:T\times X\times\field \rightarrow X\times\field$ be an arbitrary $T$\=/linearisation. Let $p_X$ and $p_\field$ be the projections of $X\times\field$ to $X$ and $\field$ respectively. Since $f$ is defined such that $\pi$ is equivariant, it follows that $p_X \circ f (t, x, z) = tx$. Furthermore, $p_\field \circ f(t,x,z)$ is linear w.r.t. $z$. For this reason there exists a morphism $c\colon T \times X \rightarrow \field$ such that
 	$$p_\field \circ f(t,x,z)=c(t,x)z.$$
 	Let $x\in X$. The compatibility axiom yields
 	\begin{equation}
@@ -313,8 +316,8 @@ For the remainder of this section assume that $X$ is an affine variety with a $\
 	\end{equation}
 	Due to the identity axiom and (\ref{equa:torus_linearisation_compatibility})
 	$$1_\field = c(1_T, x) = c(t^{-1}, tx)\cdot c(t, x) \quad \forall (t,x)\in T\times X$$
-	holds. In particular, $c$ does not vanish somewhere on $T\times X$, so that $c(\wildcard,x)$ becomes an invertible, rational function for every $x\in X$. By \cite[Proposition 3]{rationality_questiongs_algebraic_groups}, $c(\wildcard,x)$ is a character of $T$. As every character of $T$ is given by $t\mapsto t^\alpha$ for a suitable $\alpha\in\integer^d$, we conclude that 
-	$$c = \sum_{\alpha\in I} t^\alpha \tensor f_\alpha \quad f_\alpha\in \O(X)$$
+	holds. In particular, $c$ does not vanish somewhere on $T\times X$, so that $c(\wildcard,x)$ becomes an invertible, rational function for every $x\in X$. By \cite[Proposition 3]{rationality_questiongs_algebraic_groups}, $c(\wildcard,x)$ is a character of $T$. As every character of $T$ is given by $t\mapsto t^\alpha$ for a suitable $\alpha\in\integer^d$ (see \cite[§16]{linear_algebraic_groups}), we conclude that 
+	$$c = \sum_{\alpha\in I} t^\alpha \tensor f_\alpha \quad\text{with suitable}\ f_\alpha\in \O(X)\setminus\{0\}$$
 	where for every $x\in X$ there exists exactly one $\alpha\in I$ such that $f_\alpha(x) = 1$ and $f_\beta(x) = 0$ for all $x\in I\setminus\{\alpha\}$.
 	
 	If $|I|>1$, we would obtain
@@ -328,7 +331,7 @@ For the remainder of this section assume that $X$ is an affine variety with a $\
 	\index{Xomega@$X(w)$}%
 \end{notation}
 
-Now that we have identified all GIT quotients arising from $T$\=/linearisations, we are going to complement them by a combinatorical description in terms of cones. A decisive role is assigned to orbit cones, from which finitely many exist. These contain all characters $w\in\integer^k$ of $T$ that permit a global section invariant w.r.t. to $L_w$ not vanishing on a fixed point $x\in X$. Non\=/empty intersections of orbit cones, called GIT cones, represent all non\=/empty sets of semistable points. Most interestingly, the collection of GIT cones form a quasifan with convex support. We exploit this fact later when giving an algorithmic solution for determining all GIT cones.
+Now that we have identified all GIT quotients arising from $T$\=/linearisations, we are going to complement them by a combinatorical description in terms of cones. A key role is assigned to orbit cones, from which finitely many exist. These contain all characters $w\in\integer^k$ of $T$ that permit a global section invariant w.r.t. to $L_w$ not vanishing on a fixed point $x\in X$. Non\=/empty intersections of orbit cones, called GIT cones, represent all non\=/empty sets of semistable points. Most interestingly, the collection of GIT cones form a quasifan with convex support. We exploit this fact later when giving an algorithmic solution for determining all GIT cones.
 
 \begin{defi}[Orbit cone, \phantom{}{\cite[Definition 2.1]{git_equivalence}}]
 	\label{defi:orbit_cone}
@@ -344,7 +347,16 @@ Now that we have identified all GIT quotients arising from $T$\=/linearisations,
 	\index{OmegaTX@$\Omega_T(X)$}%
 \end{defi}
 
+\begin{lemma}
+	Let $x\in X$. Then $S_T(x)$ indeed is a submonoid of $\integer^k$.
+\end{lemma}
+\begin{proof}
+	Obviously, $0\in S_T(x)$ by considering $1$ in $\O(X)$. It remains to check that $S_T(x)$ is closed. Let $w_1, w_2\in S_T(x)$. Hence, there exist $f_1\in\O(X)_{w_1}$ and $f_2\in\O(X)_{w_2}$ with $f_1(x) \neq 0 \neq f_2(x)$.
+	The product $f_1f_2$ is homogeneous of degree $w_1+w_2$ with $(f_1f_2)(x) \neq 0$. We conclude that $w_1+w_2\in S_T(x)$.
+\end{proof}
+
 \begin{prop}[\phantom{}{\cite[Proposition 2.5]{git_equivalence}}]
+	\label{prop:finite_orbit_cones}
 	The collection of orbit cones $\{\omega_T(x)\mid x\in X\}$ is finite.
 \end{prop}
 \begin{proof}
@@ -353,14 +365,6 @@ Now that we have identified all GIT quotients arising from $T$\=/linearisations,
 	Let $x\in X$ and $w\in\integer^k$ such that $w\in S_T(x)$. Then there exists a polynomial $f\in\field[\mathbf{x}]$ of degree $w$ with $f(x)\neq 0$. It follows that $f$ contains at least one monomial $\mathbf{x}^\alpha$ of degree $w$ that does not vanish when substituting $x$. In particular
 	$$(t *_{(\field^*)^m} x)^\alpha = t^\alpha \cdot x^\alpha \neq 0$$
 	for $t\in(\field^*)^m$, where $*_{(\field^*)^m}$ denotes the standard action of $(\field^*)^m$ on $\field^m$. We conclude that $S_T(x)$ is constant on $(\field^*)^m$\=/orbits over $\field^m$. Since there exist only a finite number of such orbits, the claim follows.
-\end{proof}
-
-\begin{lemma}
-	Let $x\in X$. Then $S_T(x)$ is a semi\=/subgroup of $\integer^k$.
-\end{lemma}
-\begin{proof}
-	It suffices to check that $S_T(x)$ is closed. Let $w_1, w_2\in S_T(x)$. Hence, there exist $f_1\in\O(X)_{w_1}$ and $f_2\in\O(X)_{w_2}$ with $f_1(x) \neq 0 \neq f_2(x)$.
-	The product $f_1f_2$ is homogeneous of degree $w_1+w_2$ with $(f_1f_2)(x) \neq 0$. We conclude that $w_1+w_2\in S_T(x)$.
 \end{proof}
 
 \begin{lemma} Let $w\in\integer^k$. Then it holds that
@@ -421,7 +425,7 @@ is called \emph{GIT fan}.
 
 \begin{theorem}[\phantom{}{\cite[Theorem 2.11]{git_equivalence}}]
 	\label{theorem:git_fan}
-	The GIT fan $\Sigma_T(X)$ is a quasifan, that is a collected of convex polyhedral cones located in the same ambient space such that for $\sigma, \sigma'\in \Sigma_T(X)$
+	The GIT fan $\Sigma_T(X)$ is a quasifan, that is a finite collection of convex polyhedral cones located in the same ambient space such that for $\sigma, \sigma'\in \Sigma_T(X)$
 	\begin{enumerate}[label={\upshape(\roman*)}]
 		\item all faces of $\sigma$ belong to $\Sigma_T(X)$,
 		\item $\sigma \cap \sigma'$ is a face of both $\sigma$ and $\sigma'$.
@@ -429,7 +433,7 @@ is called \emph{GIT fan}.
 	Its support $\cup_{\sigma\in\Sigma_T(X)}\sigma$ is given by the (convex) weight cone $\Omega_T(X)$.
 \end{theorem}
 
-We postpone the proof and begin with some lemmas. Since the closure of a $T$\=/orbit in $X$ is $T$\=/invariant, it decomposes into a set of (possible non\=/closed) $T$\=/orbits. The following lemma translates this setup into the world of orbit cones. We omit the proof and refer to \cite{git_equivalence}.
+We postpone the proof and begin with some lemmas. Since the closure of a $T$\=/orbit in $X$ is $T$\=/invariant, it decomposes into a set of (possibly non\=/closed) $T$\=/orbits. The following lemma translates this setup into the world of orbit cones. We omit the proof and refer to \cite{git_equivalence}.
 
 \begin{lemma}[\phantom{}{\cite[Corollary 2.4]{git_equivalence}}]
 	\label{lemma:orbits_correspond_to_orbit_cones}
@@ -440,7 +444,7 @@ We postpone the proof and begin with some lemmas. Since the closure of a $T$\=/o
 \end{lemma}
 
 \begin{notation}
-	Let $\sigma\subseteq \real^k$ be a cone. We write $\sigma^\circ$ for the relative interior of $\sigma$. Note that if $\sigma$ is of full dimension $k$, then the classical interior of $c$ w.r.t. the euclidean topology coincides with the relative interior $\sigma^\circ$.
+	Let $\sigma\subseteq \real^k$ be a cone. We write $\sigma^\circ$ for the relative interior of $\sigma$. Note that if $\sigma$ is of full dimension $k$, then the interior of $c$ w.r.t. the euclidean topology coincides with the relative interior $\sigma^\circ$.
 	\index{sigma°@$\sigma^\circ$}%
 \end{notation}
 
@@ -476,14 +480,14 @@ We postpone the proof and begin with some lemmas. Since the closure of a $T$\=/o
 	 Let $\omega_T(x_1),\dots,\omega_T(x_r)$ be the orbit cones with $\sigma_T(w_1)^\circ \subseteq \omega_T(x_i)^\circ$ for $1\leq i \leq r$. By Lemma~\ref{lemma:git_cones_alternative_descriptions}, we have $\sigma_T(w_1) = \omega_T(x_1) \cap \cdots \cap \omega_T(x_r)$.
 	 
 	 Choose representatives $x_1,y_1,\dots,y_\ell$ of the $T$\=/orbit decomposition of $\overline{Tx_1}$.
-	 Lemma~\ref{lemma:orbits_correspond_to_orbit_cones} states that $\omega_T(y_i) \preceq \omega_T(x_1)$ is a proper face for all $1\leq i \leq \ell$. Due to $\sigma_T(w_1)^\circ \subseteq \omega_T(x_1)^\circ$, it follows that $\omega_T(y_i) \cap \sigma_T(w_1)^\circ = \emptyset$. By Lemma~\ref{lemma:git_cones_alternative_descriptions}, $w_1$ is contained in $\sigma_T(w_1)^\circ$ but not in $\omega_T(y_i)$. For this reason $y_i\notin X(w_1)$ holds. Together with $x_1\in X(w_1)$ because of $w_1\in \sigma_T(w_1)^\circ \subseteq \omega_T(x_1)^\circ$, we conclude that
+	 Then Lemma~\ref{lemma:orbits_correspond_to_orbit_cones} states that $\omega_T(y_i) \preceq \omega_T(x_1)$ is a proper face for all $1\leq i \leq \ell$. Because of $\sigma_T(w_1)^\circ \subseteq \omega_T(x_1)^\circ$, it follows that $\omega_T(y_i) \cap \sigma_T(w_1)^\circ = \emptyset$. By Lemma~\ref{lemma:git_cones_alternative_descriptions}, $w_1$ is contained in $\sigma_T(w_1)^\circ$ but not in $\omega_T(y_i)$. For this reason $y_i\notin X(w_1)$ holds. Together with $x_1\in X(w_1)$ due to $w_1\in \sigma_T(w_1)^\circ \subseteq \omega_T(x_1)^\circ$, we conclude that
 	 \begin{equation}
 		 \label{equa:orbit_closed_in_Xw1}
 		 \overline{Tx_1} \cap X(w_1) = Tx_1,
 	 \end{equation}
 	 i.e. $Tx_1$ is closed in $X(w_1)$.
 	 
-	 By Proposition~\ref{prop:equivalence_git_cones_semistable_points}, we have $X(w_2)\subseteq X(w_1)$. We denote the good quotient maps of $X(w_1)$ and $X(w_w)$ by $p_1$ and $p_2$ respectively. The morphism
+	 By Proposition~\ref{prop:equivalence_git_cones_semistable_points}, we have $X(w_2)\subseteq X(w_1)$. We denote the good quotient maps of $X(w_1)$ and $X(w_2)$ by $p_1$ and $p_2$ respectively. The morphism
 	 $$\varphi: X(w_2) \hookrightarrow X(w_1) \rightarrow X(w_1) \sslash T$$
 	 is $G$\=/invariant. Hence, the universal property of categorical quotients yields a unique morphism $\psi: X(w_2)\sslash T \rightarrow X(w_1)\sslash T$ such that the diagram
 	 \begin{center}
@@ -515,6 +519,8 @@ We postpone the proof and begin with some lemmas. Since the closure of a $T$\=/o
 
 Now we are ready to proof Theorem~\ref{theorem:git_fan}.
 \begin{proof}
+	The finiteness of $\Sigma_T(X)$ is an immediate consequence of Proposition~\ref{prop:finite_orbit_cones}. 
+	
 	Let $\sigma\in\Sigma_T(X)$ be a GIT cone and $\sigma_0\preceq\sigma_T(w)$ be a face. Choose $w\in\sigma_0^\circ$. By Lemma~\ref{lemma:git_cones_alternative_descriptions}, $\sigma$ is the intersection of all orbit cones containing $\sigma$. These also contain $w$, hence $\sigma_T(w)\subseteq \sigma$ by the definition of GIT cones. The prerequisite of Lemma~\ref{lemma:git_cone_subsets_of_git_cones_are_faces} is satisfied so that $\sigma_T(w)\preceq \sigma$. Now, $\sigma_T(w)$ and $\sigma_0$ are both faces of $\sigma$ containing $w$ in their relative interior by Lemma~\ref{lemma:git_cones_alternative_descriptions}. This may only be the case when $\sigma_0 = \sigma(w)$, proving that $\sigma_0\in\Sigma_T(X)$.
 	
 	Next, let $\sigma_1,\sigma_2\in\Sigma_T(X)$. Let $\tau_i\preceq\sigma_i$ be the unique face such that $(\sigma_1\cap\sigma_2)^\circ \subseteq \tau_i^\circ$ by Lemma~\ref{lemma:cones_in_cones} ($i=1,2$). Let $w\in(\sigma_1\cap\sigma_2)^\circ$. In particular, it holds that $w\in\tau_i^\circ$, so that we obtain $\sigma(w) = \tau_i$ and $\sigma(w)\subseteq \sigma_i$ as before. Due to $\sigma_1 \cap \sigma_2 \subseteq \tau_i$, it follows that 
