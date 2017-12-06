@@ -1,9 +1,146 @@
-\chapter{Applications}
+\chapter{Application: Moduli space of $n$\=/pointed stable curves}
+\label{chapter:moduli_space_of_pointed_stable_curves}
 
-\section{Grassmanian $\mathbb{G}(2,5)$}
-\label{sec:grassmanian_example}
+In order to profile and test our implementation, we are going to compute the Mori chamber decomposition of the moduli space $\overline{M}_{0,n}$ of $n$\=/pointed stable curves of genus $0$ for $n=5,6$. Essentially, this is achieved by determining the GIT fan of a graded divisoral algebra, where the grading specifies the group action on its variety. This chapter is devoted to this specific application. First, we give a concise introduction of the moduli space $\overline{M}_{0,n}$. In the second section, we define Mori dream spaces and remark that $\overline{M}_{0,n}$ indeed is such a space. Finally, we present the notion of cones of divisors and Mori chamber decompositions by means of $\overline{M}_{0,n}$.
 
-\section{Moduli space of stable curves of genus 0}
+For the remainder of this chapter, fix $n\in\natural$.
 
-% Performance fürM06, Vergleich zu gitfan.lib.
-% Hervorheben: Nicht nur gitfan-traversal schneller, sondern auch orbit-Berechnung
+\section{Moduli space of $n$\=/pointed stable curves of genus 0}
+
+We consider the moduli space $M_{0,n}$ of $n$\=/pointed rational curves of genus $0$ up to isomorphism, that is $M_{0,n}$ consists of classes of (ordered) configurations $(C,p_1,\dots,p_n)$ with $C$ being a smooth, projective curve of genus $0$ and the $p_i$ are distinct, smooth points located on $C$. Two configurations $(C,p_1,\dots,p_n)$ and $(C',p_1',\dots,p_n')$ are said to be equivalent iff there exists an isomorphism $\varphi: C \longrightarrow C'$ such that $\varphi(p_i) = p_i'$ for all $1\leq i \leq n$.
+\index{M0n@$M_{0,n}$}%
+
+We give a concrete description of $M_{0,n}$. Each smooth, projective curve of genus $0$ is isomorphic to $\projective^1$ \cite[Example IV.1.3.5]{hartshorne}. For this reason any configuration in $M_{0,n}$ may be represented by $(\projective^1, p_1,\dots,p_n)$ with $p_i\in \projective^1$ and $p_i \neq p_j$ for $i\neq j$. It is well known that for any triplet $(q_1, q_2, q_3)$ of distinct points there exists exactly one automorphism of $\projective^1$ sending this triplet to $(0,1,\infty)$. By applying the automorphism sending the first three points of our configuration to $0$, $1$ and $\infty$ respectively, we obtain a unique representative $(\projective^1, 0, 1, \infty, p_4',\dots,p_n')$ such that $p_4'$ up to $p_n'$ are distinct points contained in $\projective^1\setminus\{0,1,\infty\}$. By going over to the affine chart $\projective^1\setminus\{\infty\}\cong \mathbb{A}^1$ of $\projective^1$, we conclude that
+
+$$M_{0,n} \cong \{(p_1,\dots,p_{n-3})\in (\complex \setminus \{0,1\})^{n-3} \mid p_i\neq p_j\ \mathrm{for}\ i\neq j\}.$$
+
+By alleviating the condition on the curve $C$, Deligne and Mumford were able to construct a compactification $\overline{M}_{0,n}$ that does not only parametrise $n$\=/pointed smooth curves, but also the following $n$\=/pointed stable curves. \cite{curves_of_a_given_genus}
+\index{M0n2@$\overline{M}_{0,n}$}%
+
+\begin{defi}[\phantom{}{\cite[section 1.2]{stable_npointed_curves}}]
+	\label{defi:stable_npointed_curve}
+	An \emph{$n$\=/pointed stable curve of genus $0$} is a configuration $(C,p_1,\dots,p_n)$ where $C$ is a connected, projective curve and the marked points $p_i\in C$ are distinct and smooth such that
+	\begin{enumerate}[label={\upshape(\roman*)}]
+		\item Every irreducible component of $C$ is isomorphic to $\projective^1$,
+		\item Irreducible components intersect in nodal points. A nodal point is an ordinary double point that is passed by exactly two branches of $C$ with different tangent lines.
+		\item If $\delta$ is the number of nodal points, there are $\delta + 1 $ irreducible components.
+		\item Every irreducible component contains at least three of the marked or nodal points on $C$.
+	\end{enumerate}
+\end{defi}
+
+\begin{remark}
+	Note that all curves $C$ satisfying the conditions (i)-(iii) in Definition~\ref{defi:stable_npointed_curve} have arithmetic genus $0$. Furthermore, any automorphism of $C$ fixing all marked points is trivial, hence the name ``stable''. The set $M_{0,n}$ appears as open subset in $\overline{M}_{0,n}$ and corresponds to $n$\=/pointed stable curves which are smooth.
+\end{remark}
+
+\section{Divisors \& Cox rings \& Mori dream spaces}
+
+We introduce the notions of Cox rings and Mori dream spaces, cones of divisors and chamber decompositions as in \cite{cox_rings}. They relate to $\overline{M}_{0,n}$ in the sense that $\overline{M}_{0,n}$ is a Mori dream space for which we compute the Mori chamber decomposition. Let $X$ be an irreducible, normal prevariety over an algebraically closed field $\field$ of characteristic zero.
+
+\begin{defi}[Divisor]
+	A \emph{prime divisor} of $X$ is an irreducible subvariety $D\subseteq X$ of codimension $1$. The free abelian group generated by all prime divisors of $X$ is called the \emph{divisor group} of $X$, denoted by $\Div(X)$. Its elements are called \emph{divisors}.
+	\index{Div(X)@$\Div(X)$}%
+	
+	The \emph{support} of a divisor $D = z_1 D_1 + \dots + z_s D_s$ with prime divisors $D_i$ and integers $z_i$ is given by
+	$$\Supp(D) \defeq \bigcup_{z_i \neq 0} D_i.$$
+	\index{Supp(X)@$\Supp(X)$}%
+	The divisor $D$is called \emph{effective}, denoted by $D \geq 0$, if $z_i \geq 0 $ for all $i$.
+	\index{D>=0@$D \geq 0$}%
+\end{defi}
+
+Note, that for us, divisors are weil but not necessarily cartier.
+
+Any prime divisor $D$ corresponds to a generic point $\eta_D$ of $X$. Since $X$ is normal, its local ring $\O_{X,\eta_D}$ becomes a discrete valuation ring with discrete valuation $\nu_D\colon K(X)^* \rightarrow \integer$. For this reason, any nonzero rational function $f\in K(X)^*$ defines a divisor as follows:
+
+\begin{defi}
+	Let $f\in K(X)^*$. Then we define
+	$$\div(f) \defeq \sum_{D\ \text{prime}} \nu_D(f) \cdot D.$$
+	Divisors of the form $\div(f)$ are called \emph{principal divisors}. The set of all principal divisors is denoted by $\PDiv(X)$.
+	\index{div(f)@$\div(f)$}%
+	\index{PDiv(X)@$\PDiv(X)$}%
+\end{defi}
+
+\begin{remark}
+	The map $\div\colon K(X)^* \rightarrow \Div(X)$ is well defined and a group homomorphism. In particular, $\PDiv(X)$ is a subgroup of $\Div(X)$. The factor group
+	$$\Cl(X) \defeq \faktor{\Div(X)}{\PDiv(X)}$$
+	is called the \emph{divisor class group} of $X$.
+	\index{Cl(X)@$\Cl(X)$}%
+\end{remark}
+
+\begin{defi}
+	\label{defi:divisor_restriction}
+	Let $U\subseteq X$ be open. We define the restriction map $\Div(X) \rightarrow \Div(U)$ by the $\integer$\=/linear extension of 
+	$$D\restrict{U} \defeq \begin{cases}
+	D\cap U, & D\cap U \neq \emptyset \\
+	0,	& \text{else}
+	\end{cases}$$
+	for any prime divisor $D$ of $X$.
+\end{defi}
+
+\begin{defi}
+	Let $D\in\Div(X)$. Then we define the sheaf $\O_X(D)$ of $\O_X$\=/modules as follows:
+	$$\O_X(D)(U) \defeq \{f\in K(X)^*\mid (\div(f) + D)\restrict{U} \geq 0\} \cup \{0\}\quad \forall U\subseteq X\ \text{open}.$$
+	The restriction map is given as in Definition~\ref{defi:divisor_restriction}. Note that we have 
+	$$\O_X(D_1)(U)\cdot \O_X(D_2)(U) \subseteq \O_X(D_1 + D_2)(U)$$
+	for any open subset $U\subseteq X$ and divisors $D_1,D_2\in\Div(X)$.
+	\index{OXD@$\O_X(D)$}%
+\end{defi}
+
+\begin{defi}[Movable divisor]
+	Let $D$ be a divisor of $X$. The \emph{base locus} of $D$ is defined by
+	$$\text{Bs}\ |D| \defeq \bigcap_{f\in\O_X(D)(X)} \Supp(\div(f) + D)$$
+	and the \emph{stable base locus} is
+	$$\textbf{B}\ |D| \defeq \bigcap_{n\in\natural} \text{Bs}\ |nD|.$$
+	We say that $D$ is \emph{movable} iff its stable base locus is of codimension at least $2$ in $X$, that is, it does not contain any prime divisors.
+	\index{BsD@$\text{Bs}\ \vert D \vert$}%
+	\index{BD@$\textbf{B}\ \vert D \vert$}%
+\end{defi}
+
+\begin{defi}[Cox ring]
+	Let $X$ be such that its divisor class group $\Cl(X)$ is finitely generated and there exists a subgroup $K$ of $\Div(X)$ that is a representative system of the orbits of $\Div(X)$ w.r.t. $\PDiv(X)$. Then the \emph{Cox sheaf} of $X$ is the sheaf of divisoral algebras given by
+	$$\mathcal{R} \defeq \bigoplus_{D\in K} \mathcal{R}_{[D]} = \bigoplus_{[D]\in \Cl(X)} \mathcal{R}_{[D]}, \quad\quad \mathcal{R}_{[D]} \defeq \O_X(D).$$
+	Up to isomorphy, it does not depend on the choice of $K$. The \emph{Cox ring} of $X$ is the $\Cl(X)$\=/graded algebra of global sections $\mathcal{R}(X)$.
+	\index{RX@$\mathcal{R}(X)$}%
+\end{defi}
+
+In the construction of Cox rings presented here, we do rely on the existence of a subgroup of $\Div(X)$ being a representative system. In general, it suffices to demand a subgroup of $\Div(X)$ such that the equivalence classes of its elements cover all $\Cl(X)$, see \cite[Construction 1.4.2.1]{cox_rings}.
+
+\begin{defi}[Mori dream space]
+	Let $X$ be an irreducible, normal projective variety. It is called a \emph{Mori dream space} if its divisor class group $\Cl(X)$ and its Cox ring $\mathcal{R}$ are finitely generated.
+\end{defi}
+
+\begin{remark}
+	\label{remark:mn_setup}
+	Whereas the Deligne\=/Mumford compactification $\overline{M}_{0,n}$ of the moduli space of $n$\=/pointed stable curves of genus $0$ is no Mori dream space for sufficiently large $n$ \cite{mn_is_not_a_mori_dream_space}, for $n=5,6$, its Cox ring is finitely generated. A set of homogenous generators of $\mathcal{R}(\overline{M}_{0,5})$ is identified by \cite{cox_ring_del_pezzo_surface} since $\overline{M}_{0,5}$ is a del Pezzo surface \cite{bernal}. In \cite{cox_ring_of_msix}, \citeauthor{cox_ring_of_msix} determines a set of homogenous generators for $\mathcal{R}(\overline{M}_{0,6})$. \citeauthor{bernal} \cite{bernal} then computes the relations between the generators so that a presentation of the Cox rings in terms of a zero locus is obtained. Furthermore, she provides an explicit description of the symmetry group action on $\mathcal{R}(\overline{M}_{0,5})$ and $\mathcal{R}(\overline{M}_{0,6})$ respectively that arises from permuting marked points in a configuration, that is 
+	$$\sigma\cdot(C,p_1,\dots,p_n) \defeq (C,p_{\sigma(1)},\dots,p_{\sigma(n)})\quad \forall\sigma\in \mathcal{S}_n.$$
+	
+	Hence, we obtain embedding of the Cox ring as in \ref{construction:algebraic_torus}. The torus action is defined by the grading living in the divisor class group, which is a finitely generated subgroup of some $\integer^d$. This defines the matrix $Q$ in our setup of section~\ref{section:setup}. The vanishing ideal $\ideal$ is given by the relations between the generators. \citeauthor{bernal}'s description of the symmetry group action extends our setup in the sense of section~\ref{sec:exploiting_symmetry}.
+\end{remark}
+
+\section{Mori chamber decomposition}
+
+In this section we refer to $\overline{M}_{0,n}$ as a Mori dream space and tacitly assume that $n=5$ or $n=6$. With Remark~\ref{remark:mn_setup} in mind, we see that the lattice points of the weight cone of $\mathcal{R}(\overline{M}_{0,n})$ as in section~\ref{sec:git_fan} are in fact divisor classes of $\overline{M}_{0,n}$. It lives in the ambient space $\Cl(\overline{M}_{0,n}) \tensor_\integer \rational$. For this reason, all cones arising in section~\ref{sec:git_fan} are considered to be cones of divisors classes such that its lattice points are elements in $\Cl(\overline{M}_{0,n})$. We are interested in two particular cones:
+
+\begin{defi}
+	The \emph{cone of effective [movable] divisor classes} of $\overline{M}_{0,n}$ is given by
+	$$\Eff(\overline{M}_{0,n}) = \langle [D] \tensor 1 \mid D\in\Div(\overline{M}_{0,n})\ \text{effective} \rangle_{\rational{> 0}},$$
+	$$\Mov(\overline{M}_{0,n}) = \langle [D] \tensor 1 \mid D\in\Div(\overline{M}_{0,n})\ \text{movable} \rangle_{\rational{> 0}}.$$
+	\index{EffM0n@$\Eff(\overline{M}_{0,n})$}%
+	\index{MovM0n@$\Mov(\overline{M}_{0,n})$}%
+	
+	Note that the sets of effective and movable divisors respectively are recovered by intersecting the above convex cones with $\Cl(\overline{M}_{0,n}) \tensor 1$. We also call the cone of movable divisor classes the \emph{moving cone}.
+\end{defi}
+
+\begin{remark}
+	\label{remark:cone_of_divisor_classes_in_mn_context}
+	By \cite[Proposition 3.3.2.1]{cox_rings}, the cone of effective divisor classes of $\overline{M}_{0,n}$ coincides with the weight cone of $\overline{M}_{0,n}$. Furthermore, in the setup of section~\ref{section:setup}, the moving cone is easily computed by intersecting all cones generated by all but one column of $Q$, that is
+	$$\Mov(\overline{M}_{0,n}) = \bigcap_{\gamma_0 \preceq \gamma\ \mathrm{facet}} Q(\gamma_0)$$
+	with the notation of chapter~\ref{chap:algorithm}. This claim is an immediate consequence of \cite[Proposition 3.3.2.3]{cox_rings}.
+\end{remark}
+
+\begin{defi}
+	The \emph{Mori chamber decomposition} of the cone of effective divisor classes is the collection of chambers -- i.e. full dimensional cones -- of the GIT fan of $\overline{M}_{0,n}$. The \emph{Mori chamber decomposition} of the moving cone arises from the chambers of the fan obtained by intersecting the GIT fan with $\Mov(\overline{M}_{0,n})$.
+\end{defi}
+
+By \cite[Remark 3.3.4.2]{cox_rings}, the Mori chamber decomposition of the moving cone  $\Mov(\overline{M}_{0,n})$ parametrises all Mori dream spaces with Cox ring $\mathcal{R}(\overline{M}_{0,n})$ up to isomorphism. The implementation described in chapter~\ref{chap:implementation} allows us to compute the Mori chamber decompositions for $\Mov(\overline{M}_{0,n})$ efficiently. The input data for the algorithm is derived as in \ref{remark:mn_setup}. The explicit descriptions may be found in \cite{gitfan_symmetry}.
+
+In order to speed up the computation of the Mori chamber decomposition of $\Mov(\overline{M}_{0,6})$, we dropped the generators of $\overline{M}_{0,6}$ corresponding to Keel-Vermeire divisors. Due to \cite[Remark 6.7]{gitfan_symmetry}, the Mori chamber decomposition of the moving cone is not altered by this modification. However, we reduce the problem size significantly, considering an embedding into $\field^{25}$ only instead of $\field^{40}$.

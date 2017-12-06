@@ -353,6 +353,7 @@ Finally, Algorithm~\ref{algo:compute_git_cones} describes a graph traversal and 
 \end{algorithm}
 
 \section{Exploiting symmetry}
+\label{sec:exploiting_symmetry}
 
 In this section we modify Algorithm~\ref{algo:compute_git_cones} such that symmetries of $T$ acting on $X$ are taken into account, reducing the size of the traversed graph without loosing information. On that account, we include a symmetry group $\mathcal{S}$ in our setup.
 
@@ -423,6 +424,22 @@ In this section we modify Algorithm~\ref{algo:compute_git_cones} such that symme
 	Note that the action of $\mathcal{S}$ on cones in $\rational^k$ preserves dimensions because the matrices $A_\sigma$ are invertible. Consequently, we can restrict the actions on $\Omega_\ideal$ and $\Sigma_T(X)$ to cones of the fixed dimension $k$.
 \end{proof}
 
+Later on in chapter~\ref{chapter:moduli_space_of_pointed_stable_curves}, we are going to intersect the GIT fan with the cone of movable divisor classes of a Mori dream space. If this cone is invariant under the action of $\mathcal{S}$ on $\rational^k$, it suffices to intersect it with a representative system of orbit cone orbits only. The following proposition together with Remark~\ref{remark:cone_of_divisor_classes_in_mn_context} states the cone's invariance. 
+
+\begin{prop}
+	\label{prop:invariance_moving_cone}
+	The convex cone
+	$$\bigcap_{\gamma_0 \preceq \gamma\ \mathrm{facet}} Q(\gamma_0)\subseteq \rational^k$$
+	is invariant with respect to the action $\mathcal{S}\acts \rational^k$.
+\end{prop}
+\begin{proof}
+	Let $\sigma\in\mathcal{S}$. Since permutations in $\mathcal{S}_r$ permute the subsets of $\{1,\dots,r\}$ with cardinality $r-1$, the facets of $\gamma$ are permuted by $\sigma$. It follows that
+	$$\sigma\cdot\left(\bigcap_{\gamma_0 \preceq \gamma\ \mathrm{facet}} Q(\gamma_0) \right)
+	= \bigcap_{\gamma_0 \preceq \gamma\ \mathrm{facet}} \sigma\cdot Q(\gamma_0)
+	= \bigcap_{\gamma_0 \preceq \gamma\ \mathrm{facet}} Q(\sigma \gamma_0)
+	= \bigcap_{\gamma_0 \preceq \gamma\ \mathrm{facet}} Q(\gamma_0).$$
+\end{proof}
+
 Taking the symmetry group $\mathcal{S}$ into account, it suffices to traverse the following graph in order to determine the GIT fan.
 
 \begin{defi}
@@ -488,8 +505,6 @@ Finally, Algorithm~\ref{algo:compute_git_cone_orbits} computes all full dimensio
 	}
 	\Return $\mathcal{C}$\;
 \end{algorithm}
-
-\todo{Moving Cone invariant under symmetry group}
 
 \section{Counterexample: Removal of non-minimal orbit cones}
 
