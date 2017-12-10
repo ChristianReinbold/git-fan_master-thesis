@@ -1,7 +1,7 @@
 \chapter{Implementation}
 \label{chap:implementation}
 
-In the following we present the implementation of the algorithm discussed in the previous chapter. In contrast to the existing \singular{} implementation \gitfanlib{} \cite{gitfanlib}, which forms the foundation of our work, the approach described here utilises high performance computing methods in order to speed up the execution by running the algorithm on any number of machines simultaneously. Naturally, one has to identify independent components permitting concurrent execution on the one hand and inherent sequential processes on the other hand. As the sequential components of the algorithm mostly agree with \gitfanlib{}, we discuss only reworked parts and skip the remaining ones, referring the interested reader to \cite{gitfanlib}. The chapter is structured as follows: First, we discuss the employed parallelisation framework \gpispace{} developed by the \ac{Fraunhofer ITWM} and follow up with the integration of singular code into \gpispace{} applications. After encoding GIT cone orbits, we present a parallel design of Algorithm~\ref{algorithm:main} that is applicable for any kind of fan traversals. Finally, we describe input and output formats, additional features such as speeding up the execution by precomputed results, and executed software tests in order to verify the functional correctness of the program.
+In the following we present the implementation of the algorithm discussed in the previous chapter. In contrast to the existing \singular{} implementation \gitfanlib{} \cite{gitfanlib}, which forms the foundation of our work, the approach described here utilises high performance computing methods in order to speed up the execution by running the algorithm on any number of machines simultaneously. Naturally, one has to identify independent components permitting concurrent execution on the one hand and inherent sequential processes on the other hand. As the sequential components of the algorithm mostly agree with \gitfanlib{}, we discuss only reworked parts and skip the remaining ones, referring the interested reader to \cite{gitfanlib}. The chapter is structured as follows: First, we discuss the employed parallelisation framework \gpispace{} developed by the \ac{Fraunhofer ITWM} and follow up with the integration of \singular{} code into \gpispace{} applications. After encoding GIT cone orbits, we present a parallel design of Algorithm~\ref{algorithm:main} that is applicable for any kind of fan traversals. Finally, we describe input and output formats, additional features such as speeding up the execution by precomputed results, and executed software tests in order to verify the functional correctness of the program.
 
 \section{\gpispace}
 
@@ -62,7 +62,7 @@ The \ac{WE} itself is executed on a single node of the underlying system. Hence,
 
 \gpispace{} assumes that module calls have no side effects. Thus, when implementing the execution code for the transitions, possible racing conditions and concurrency issues have to be considered properly. Furthermore, each worker managed by the \ac{DRTS} is executed in its own process, but beyond that, jobs assigned to the same worker run in the same environment. For this reason jobs are influenced by changes of global state by prior executions. This behaviour causes several issues when integrating \singular{}, which is implemented as a large, global state machine.
 
-\section{Integration of Singular}
+\section{Integration of \singular}
 \singular{} is a computer algebra system for polynomial computations, with special emphasis on commutative and non\=/commutative, algebraic geometry and singularity theory \cite{singular}. Typically, algorithms utilising \singular{} are written in its own \c\=/like programming language, which is interpreted at runtime. Besides providing a console frontend for code execution, \singular{} also comes with the \c{} library \libsingular{} that implements its full backend. In particular, \c{} methods for interpreting and executing \singular{} code are available. \libsingular{} also exposes the internal data structures used by \singular{}, so that one can write conversion methods between \singular{} types and user defined types, i.e. \gpispace{} types.
 
 Since module calls in \gpispace{} permit the execution of arbitrary \cplusplus{} code, every legacy application with a \c{} interface such as \singular{} can easily be integrated and executed. In order to execute \singular{} code in a module call, one has to perform the following steps:
@@ -237,7 +237,7 @@ When the application terminates, the following files have been written to the wo
 \begin{description}
 	\item[\texttt{args}:] This file logs all command line argument values that have been passed to the application.
 	\item[\texttt{rev}:] This file contains the SHA1 git commit hash of the current build.
-	\item[\texttt{load\_git\_cones.sing}:] A singular script that may be piped into a singular instance in order to load all orbit and GIT cones into the variables \texttt{ORBIT\_CONES} and \texttt{GIT\_CONES}.
+	\item[\texttt{load\_git\_cones.sing}:] A \singular{} script that may be piped into a \singular{} instance in order to load all orbit and GIT cones into the variables \texttt{ORBIT\_CONES} and \texttt{GIT\_CONES}.
 	\item[\texttt{load\_git\_cones.lib}:] A helper library that is used by the previously mentioned script.
 \end{description}
 
@@ -293,7 +293,7 @@ The execution time of all module calls and the total program runtime are measure
 
 Throughout the development of the application, we thoroughly implemented and maintained automated functional unit tests by using the \gtest{}\=/framework. We differentiate between three types of tests.
 
-\emph{Component tests} verify that the implementations of utility classes used in module calls display the correct behaviour. For instance, the storage implementations, logging classes, singular wrapper routines, type conversion routines and a LRU Cache implementation are automatically tested.
+\emph{Component tests} verify that the implementations of utility classes used in module calls display the correct behaviour. For instance, the storage implementations, logging classes, \singular{} wrapper routines, type conversion routines and a LRU Cache implementation are automatically tested.
 
 \emph{Module call tests} check all module calls that occur in the modelled Petri nets. 
 Each test loads a set of valid sample data derived from the $\overline{M}_{0,5}$ example (see chapter~\ref{chapter:moduli_space_of_pointed_stable_curves} or \cite[Example 5.2]{gitfan_symmetry}) and invokes a single module call, passing in the loaded data. Then the returned values are checked against the expected behaviour.
