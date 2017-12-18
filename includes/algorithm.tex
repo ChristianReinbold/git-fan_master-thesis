@@ -1,13 +1,3 @@
-
-
-% Grundlegender Aufbau:
-% Git-Equivalence beyond the ample cone kommt in das Preliminaries-Kapitel
-% Noch in Erfahrung bringen: Sinn den MovingCones.
-
-
-% Reference to algorithm describing the whole application
-\label{algorithm:main}
-
 \chapter{Concept of the algorithm}
 \label{chap:algorithm}
 
@@ -18,7 +8,7 @@ First, we describe the formal setup and introduce the notation being used in the
 \section{The setup}
 \label{section:setup}
 
-Let $\field$ be an algebraically closed field of characteristic zero. We consider an algebraic group action of a $k$-dimensional torus $T$ on an affine variety $X$. Due to construction~\ref{construction:algebraic_torus}, we describe this setup by a set of integral vectors $q_i\in\integer^n$, $1\leq i \leq m$, and a suitable embedding of $X$ in $\field^r$ such that its vanishing ideal $\ideal \defeq I(X)$ is homogeneous w.r.t.
+Let $\field$ be an algebraically closed field of characteristic zero. We consider an algebraic group action of a $k$-dimensional torus $T$ on an affine variety $X$. Due to construction~\ref{construction:algebraic_torus}, we describe this setup by a set of integral vectors $q_i\in\integer^k$, $1\leq i \leq r$, and a suitable embedding of $X$ in $\field^r$ such that its vanishing ideal $\ideal \defeq I(X)$ is homogeneous w.r.t.
 $$\deg(x_i) = q_i,\quad 1\leq i \leq r.$$
 The vectors $q_i$ form the columns of a matrix $Q\in\field^{k\times r}$. By restricting $T$ to a lower dimensional subtorus if necessary, we may assume that $Q$ has rank $k$ without changing the orbits in $X$. Furthermore, we assume that $\ideal$ contains no monomials. As we will see later on, this assumption is equivalent to $X\cap (\field^*)^r \neq \emptyset$. On that account and the irreducibility of $X$, $X$ is located in at least one of the hyperplanes $\{x_i = 0\}$, $1\leq i \leq r$, iff the assumption does not hold. By ``forgetting" all variables with $X\cap \{x_i = 0\} = X$, we obtain an embedding of $X$ such that $X\cap (\field^*)^{r'} \neq \emptyset$ holds.
 
@@ -121,7 +111,7 @@ Next, we implement an algorithm computing $(I : (z_1\cdots z_n)^\infty)$ for arb
 	\label{remark:satisying_assumption_saturated_monomial}
 	The negative reverse lexicographical ordering
 	$$z^\alpha >_\text{rs} z^\beta\ \defequiv\ \exists i\in\{1,\dots,n\}: \alpha_i < \beta_i\ \text{and}\ \alpha_j = \beta_j\ \forall j\in\{i+1,\dots,n\}$$
-	ensures that (\ref{equation:saturated_monomial_assumption}) is satisfied for $m=n$. Every monomial $z^\beta$ with $z_n \mid z^\beta$ is strictly smaller than any monomial $z^\alpha$ with $z_n \centernot\mid z^\alpha$, since $\alpha_n = 0 < \beta_n$. Note that (\ref{equation:saturated_monomial_assumption}) may hold for other values for $m$ by using a negative reverse lexicographical ordering after reordering the variables $z_1,\dots,z_n$.
+	ensures that (\ref{equation:saturated_monomial_assumption}) is satisfied for $m=n$. Every monomial $z^\beta$ with $z_n \mid z^\beta$ is strictly smaller than any monomial $z^\alpha$ with $z_n \centernot\mid z^\alpha$, since $\alpha_n = 0 < \beta_n$. Note that (\ref{equation:saturated_monomial_assumption}) may hold for other values of $m$ by using a negative reverse lexicographical ordering after reordering the variables $z_1,\dots,z_n$.
 	
 	Unfortunately, $\;>_\text{rs}$ is no global ordering. However, if $I$ permits a weight vector $w\in\integer^n_{>0}$ such that $I$ is homogeneous, we consider the $w$\=/weighted degree ordering with tie-breaker $\;>_\text{rs}$, that is $(>_w, >_\text{rs})$. This ordering is global and satisfies (\ref{equation:saturated_monomial_assumption}) on $w$\=/homogeneous generators of $I$.
 \end{remark}
@@ -267,7 +257,7 @@ Proposition~\ref{proposition:git_fan_connected} allows us to determine all full 
 
 \begin{lemma}
 	\label{lemma:git_cones_elementary_properties}
-	Let $p\in Q(\gamma)$ such that $\lambda \eqdef \lambda(p)\in\Sigma_T(X)^{(k)}$. Then we have
+	Let $p\in Q(\gamma)$ such that $\lambda \defeq \lambda(p)\in\Sigma_T(X)^{(k)}$. Then we have
 	\begin{enumerate}[label={\upshape(\roman*)}]
 		\item $\lambda = \bigcap\limits_{p\in\sigma\in\Omega_\ideal^{(k)}}\sigma,$
 			\label{enum_item:git_cones_full_dim_orbit_cones}
@@ -282,15 +272,15 @@ Proposition~\ref{proposition:git_fan_connected} allows us to determine all full 
 \begin{proof}
 	\ref{enum_item:git_cones_full_dim_orbit_cones} is trivial since dimensions do not increase when intersecting. \ref{enum_item:git_cones_defining_orbit_cones} clearly holds by the definition of $\lambda$. \ref{enum_item:git_cones_enclosed_orbit_cones} is an immediate consequence of \ref{enum_item:git_cones_full_dim_orbit_cones} and \ref{enum_item:git_cones_defining_orbit_cones}.
 	
-	Let $q\in\lambda^\circ$. Since $q$ is contained in all $\sigma\in\Omega_\ideal^{(k)}$ such that $\lambda\in\sigma$, by \ref{enum_item:git_cones_enclosed_orbit_cones} it follows that $\lambda(q)\subseteq\lambda$. If the inequality would be proper, $\lambda(q)$ would be a proper face of $\lambda$ containing $q$, contradicting $q\in\lambda^\circ$.
+	Let $q\in\lambda^\circ$. Since $q$ is contained in all $\sigma\in\Omega_\ideal^{(k)}$ such that $p\in\sigma$ it follows that $\lambda(q)\subseteq\lambda$. If the inequality would be proper, $\lambda(q)$ would be a proper face of $\lambda$ containing $q$, contradicting $q\in\lambda^\circ$.
 \end{proof}
 
 \begin{algorithm}
 	\caption{Computing all related GIT cones}
 	\label{algo:compute_git_cone_neighbours}
 	
-	\KwIn{A full dimensional GIT cone $\lambda\in\Sigma_T(X)$}
-	\KwOut{All full dimensional GIT cones $\mu\in\Sigma_T(X)$ such that $\lambda\cap\mu$ is a common facet of $\lambda$ and $\mu$}
+	\KwIn{A full dimensional GIT cone $\lambda\in\Sigma_T(X)^{(k)}$}
+	\KwOut{All full dimensional GIT cones $\mu\in\Sigma_T(X)^{(k)}$ such that $\lambda\cap\mu$ is a common facet of $\lambda$ and $\mu$}
 	\BlankLine
 	$\mathcal{N} \leftarrow \emptyset$\;
 	\For{$\vartheta\preceq \lambda$ being a facet of $\lambda$ with $\vartheta^\circ\cap\partial Q(\gamma) = \emptyset$}{
@@ -407,7 +397,7 @@ In this section we modify Algorithm~\ref{algo:compute_git_cones} such that symme
 	\ \Leftrightarrow\ z_i = c_{\sigma^{-1},i} \cdot x_{\sigma^{-1}(i)} \neq 0
 	\quad\forall 1\leq i\leq r,
 	$$
-	implying $z\in\T_{\sigma\gamma_0}$. Let $f\in\ideal$. By construction, we have $f(z) = (\sigma^{-1}f)(x)$. Now, $x$ vanishes on $\ideal$ and $\sigma^{-1}f\in\ideal$, so that $f(z) = 0$. For this reason $z\in X = V(\ideal)$ holds and $\sigma\gamma_0$ is an \aface{}.
+	implying $z\in\T_{\sigma\gamma_0}$. Let $f\in\ideal$. By construction, we have $f(z) = (\sigma^{-1}f)(x)$. Now, $\sigma^{-1}f\in\ideal$ and $x$ vanishes on $\ideal$, so that $f(z) = 0$. For this reason $z\in X = V(\ideal)$ holds and $\sigma\gamma_0$ is an \aface{}.
 \end{proof}
 
 \begin{prop}
@@ -459,7 +449,7 @@ Taking the symmetry group $\mathcal{S}$ into account, it suffices to traverse th
 	\caption{Computing all neighbours of a GIT cone orbit}
 	\label{algo:git_cone_orbit_neighbours}
 	
-	\KwIn{a GIT cone orbit $\O\in\faktor{\Sigma_T(X)^{(k)}}{\mathcal{S}}$}
+	\KwIn{A GIT cone orbit $\O\in\faktor{\Sigma_T(X)^{(k)}}{\mathcal{S}}$}
 	\KwOut{All GIT cone orbits $\O_\mathcal{N}\in\faktor{\Sigma_T(X)^{(k)}}{\mathcal{S}}$ such that $\{\O, \O_\mathcal{N}\}\in E_{\mathcal{G}_\mathcal{S}(\Sigma_T(X))}$}
 	\BlankLine
 	$\mathcal{N} \leftarrow \emptyset$\;
@@ -497,7 +487,7 @@ Finally, Algorithm~\ref{algo:compute_git_cone_orbits} computes all full dimensio
 		Choose $\textcolor{red}{\O}\in\mathcal{F}$\;
 		$\mathcal{F} \leftarrow \mathcal{F} \setminus \{\textcolor{red}{\O}\}$\;
 		\For(\Comment*[f]{by Algorithm~\textcolor{red}{\ref{algo:git_cone_orbit_neighbours}}}){$\textcolor{red}{\O_\mathcal{N}}$ with $\{\textcolor{red}{\O,\O_\mathcal{N}}\}\in E_{\mathcal{G}_{\textcolor{red}{\mathcal{S}}}(\Sigma_T(X))}$}{
-			\If{$\textcolor{red}{\O}\notin\mathcal{C}$}{
+			\If{$\textcolor{red}{\O_\mathcal{N}}\notin\mathcal{C}$}{
 				$\mathcal{C} \leftarrow \mathcal{C} \cup \{\textcolor{red}{\O_\mathcal{N}}\}$\;
 				$\mathcal{F} \leftarrow \mathcal{F} \cup \{\textcolor{red}{\O_\mathcal{N}}\}$\;
 			}
