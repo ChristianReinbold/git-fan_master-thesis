@@ -74,6 +74,7 @@ Since module calls in \gpispace{} permit the execution of arbitrary \cplusplus{}
 	\item Extract the data mapped to all identifiers that contain results of the computation.
 	\item Convert the extracted \singular{} types to \gpispace{} types that can be attached to tokens.
 \end{enumerate}
+When integrating \singular{}, we were able to greatly benefit from Ristau's current work \cite{smoothness_test} on a smoothness test implementation utilising \gpispace{}.
 
 \subsection*{Drawback: Global state}
 Although integrating \singular{} code is sufficiently easy, the approach described above suffers from a serious issue that originates from \singular{} heavily relying on global state. For instance, loaded libraries, declared variables and the current basering are managed in global data structures. If module calls are supposed to have no side effects, all changes concerning global state have to be reverted before returning from them. Unfortunately, \libsingular{} lacks the feature of creating and restoring images of its global state. In fact, there seems to be no way of resetting \singular{} to its initial state short of killing the current process, which -- obviously -- is not desirable.
@@ -249,6 +250,18 @@ Furthermore, a subdirectory \texttt{result} is created, containing the following
 	\item[\texttt{symmetry\_group\_on\_hashes}:] This file contains the group action of $S$ on the GIT cone code words. Similarly to the \texttt{symmetry-group} parameter, the action is stored as a list of permutations on the set of orbit cones ordered by the \texttt{list} file.
 \end{description}
 
+\subsection*{Arguments for \gpispace{}}
+
+The following parameters configure the \gpispace{} environment:
+
+\begin{description}
+	\item[\texttt{nodefile}:] A path to a nodefile describing all available computing nodes. In a cluster management and job scheduling system such as \slurm{} \cite{slurm} a nodefile may be obtained by \texttt{generate\_pbs\_nodefile}.
+	\item[\texttt{rif-strategy}:] Selects the strategy used by the \ac{RIFD}. Currently, \texttt{ssh} and \texttt{pbsdsh} are available. We use \texttt{ssh}.
+	\item[\texttt{rif-strategy-parameters}:] Additional parameters passed to the bootstrapping routine of the \ac{RIFD} strategy. We do not supply any argument.
+	\item[\texttt{rif-port}:] Specifies a port on which \ac{RIFD} listens. We do not supply any argument.
+	\item[\texttt{worker-per-node}:] The amount of workers that are set up per node. In our case, we set this value to $16$, matching the amount of cores per node.
+\end{description}
+
 \section{Additional features}
 \label{sec:additional_features}
 
@@ -306,7 +319,7 @@ All input data sets and expected data sets have been computed by using the \gitf
 
 In order to evaluate the efficiency and scalability of our implementation, we executed the algorithm for the \msix{} example on the cluster of the \ac{Fraunhofer ITWM}. Each node is operated by a \emph{Dell PowerEdge M620 Blade Server} with the following specification:
 \begin{itemize}
-	\item dual Intel Xeon E5-2670 ("Sandy Bridge") -- i.e. 16 CPU cores
+	\item dual Intel Xeon E5-2670 ("Sandy Bridge") -- i.e. (physical) 16 CPU cores
 	\item 64 GB RAM
 	\item 300 GB HDD
 	\item 2x Gigabit Ethernet
@@ -337,7 +350,7 @@ We computed the orbit cones from the reduced ideal and torus action of the \msix
 	\label{table:performance_orbit_cones}
 \end{table}
 
-Compared to a sequential execution on one core, we obtain a maximal speedup of factor 5. This is due to the fact that the costly operation of computing an orbit for a representative -- represented by Step~\ref{enum_item:compute_orbit_cone_orbits} in stage 2 -- is implemented as a sequential operation. Hence, we obtain a theoretical speedup of 9, which is the amount of orbits that have to be computed. Since the required time for computing different orbits varies greatly between 226 and 312 seconds, we obtain a lower speedup when joining the results of Step~\ref{enum_item:compute_orbit_cone_orbits}. Further potential speedup is lost due to the large job size, which relieves the \ac{WE} when performing the \aface{}\=/test for all of the 6993 representative of the faces of $\gamma$, but prohibits parallel execution when intersecting the remaining orbit cone representatives with the moving cone. We expect a higher speedup for problems with more orbit cone orbits.
+Compared to a sequential execution on one core, we obtain a maximal speedup of factor 5. This is due to the fact that the costly operation of computing an orbit for a representative -- represented by Step~\ref{enum_item:compute_orbit_cone_orbits} in stage 2 -- is implemented as a sequential operation. Hence, we obtain a theoretical speedup of 9, which is the amount of orbits that have to be computed. Since the required time for computing different orbits varies greatly between 226 and 312 seconds due to different numbers of facets for each orbit cone, we obtain a lower speedup when joining the results of Step~\ref{enum_item:compute_orbit_cone_orbits}. Further potential speedup is lost due to the large job size, which relieves the \ac{WE} when performing the \aface{}\=/test for all of the 6993 representative of the faces of $\gamma$, but prohibits parallel execution when intersecting the remaining orbit cone representatives with the moving cone. We expect a higher speedup for problems with more orbit cone orbits.
 
 \subsection*{GIT fan traversal}
 
