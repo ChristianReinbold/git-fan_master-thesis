@@ -82,7 +82,7 @@ The previous proposition shows that all orbit cones arise from \afaces{} and tha
 	contradicting $x\in X = V(\ideal)$.
 	
 	\ref{enum_item:aface_equivalence_monomial} $\Rightarrow$ 
-	\ref{enum_item:aface_equivalence_aface}: Assume that $V(\ideal_{\gamma_0}) \subseteq V(\prod_{i\in I} x_i)$ holds. Then Hilbert's Nullstellensatz yields a $j\in\natural$ such that $(\prod_{i\in I} x_i)^j\in\ideal_{\gamma_0}$, contradicting \ref{enum_item:aface_equivalence_monomial}. Hence, $V(\ideal_{\gamma_0}) \not\subseteq V(\prod_{i\in I} x_i)$. In particular, we find a point $z = (z_i)_{i\in I} \subseteq \field^*$ with $z\in V(\ideal_{\gamma_0})$. We extend $z$ to a point $\tilde{z}\in\T_{\gamma_0}$ by setting
+	\ref{enum_item:aface_equivalence_aface}: Assume that $V(\ideal_{\gamma_0}) \subseteq V(\prod_{i\in I} x_i)$ holds. Then Hilbert's Nullstellensatz yields $j\in\natural$ such that $(\prod_{i\in I} x_i)^j\in\ideal_{\gamma_0}$, contradicting \ref{enum_item:aface_equivalence_monomial}. Hence, $V(\ideal_{\gamma_0}) \not\subseteq V(\prod_{i\in I} x_i)$. In particular, we find a point $z = (z_i)_{i\in I} \subseteq \field^*$ with $z\in V(\ideal_{\gamma_0})$. We extend $z$ to a point $\tilde{z}\in\T_{\gamma_0}$ by setting
 	$$\tilde{z}_i = \begin{cases}
 	z_i, & i\in I \\
 	0, & \text{else}
@@ -522,7 +522,7 @@ and may be computed manually by taking all faces $\gamma_0\preceq \gamma$ with d
 The orbit cones $Q(\gamma_j)\in \rational^3_{z_1,z_2,z_3}$ yield the following polytopes when intersecting them with the $\{z_3 = 1\}$\=/plain:
 
 \psset{xunit=2cm,yunit=2cm}
-\begin{minipage}{.33\textwidth}\centering
+\begin{minipage}{.325\textwidth}\centering
 	\begin{pspicture}(-0.5, -0.5)(1.25, 1.25)
 	\psaxes{->}(0,0)(1.25,1.25)
 	\psgrid[griddots=20,subgriddots=10,subgriddiv=2,gridlabels=0pt](2,2)
@@ -530,7 +530,7 @@ The orbit cones $Q(\gamma_j)\in \rational^3_{z_1,z_2,z_3}$ yield the following p
 	\rput(0.6,0.75){$Q(\gamma_1)$}
 	\end{pspicture}
 \end{minipage}
-\begin{minipage}{.33\textwidth}\centering
+\begin{minipage}{.325\textwidth}\centering
 	\begin{pspicture}(-0.5, -0.5)(1.25, 1.25)
 	\psaxes{->}(0,0)(1.25,1.25)
 	\psgrid[griddots=20,subgriddots=10,subgriddiv=2,gridlabels=0pt](2,2)
@@ -538,7 +538,7 @@ The orbit cones $Q(\gamma_j)\in \rational^3_{z_1,z_2,z_3}$ yield the following p
 	\rput(0.35,0.25){$Q(\gamma_2)$}
 	\end{pspicture}
 \end{minipage}
-\begin{minipage}{.33\textwidth}\centering
+\begin{minipage}{.325\textwidth}\centering
 	\begin{pspicture}(-0.5, -0.5)(1.25, 1.25)
 	\psaxes{->}(0,0)(1.25,1.25)
 	\psgrid[griddots=20,subgriddots=10,subgriddiv=2,gridlabels=0pt](2,2)
@@ -546,7 +546,7 @@ The orbit cones $Q(\gamma_j)\in \rational^3_{z_1,z_2,z_3}$ yield the following p
 	\rput(0.35,0.7){$Q(\gamma_3)$}
 	\end{pspicture}
 \end{minipage}
-\begin{minipage}{.33\textwidth}\centering
+\begin{minipage}{.325\textwidth}\centering
 	\begin{pspicture}(-0.5, -0.5)(1.25, 1.25)
 	\psaxes{->}(0,0)(1.25,1.25)
 	\psgrid[griddots=20,subgriddots=10,subgriddiv=2,gridlabels=0pt](2,2)
@@ -554,7 +554,7 @@ The orbit cones $Q(\gamma_j)\in \rational^3_{z_1,z_2,z_3}$ yield the following p
 	\rput(0.65,0.7){$Q(\gamma_4)$}
 	\end{pspicture}
 \end{minipage}
-\begin{minipage}{.33\textwidth}\centering
+\begin{minipage}{.325\textwidth}\centering
 	\begin{pspicture}(-0.5, -0.5)(1.25, 1.25)
 	\psaxes{->}(0,0)(1.25,1.25)
 	\psgrid[griddots=20,subgriddots=10,subgriddiv=2,gridlabels=0pt](2,2)
@@ -562,7 +562,7 @@ The orbit cones $Q(\gamma_j)\in \rational^3_{z_1,z_2,z_3}$ yield the following p
 	\rput(0.65,0.25){$Q(\gamma_5)$}
 	\end{pspicture}
 \end{minipage}
-\begin{minipage}{.33\textwidth}\centering
+\begin{minipage}{.325\textwidth}\centering
 	\begin{pspicture}(-0.5, -0.5)(1.25, 1.25)
 	\psaxes{->}(0,0)(1.25,1.25)
 	\psgrid[griddots=20,subgriddots=10,subgriddiv=2,gridlabels=0pt](2,2)
@@ -586,28 +586,28 @@ When taking all orbit cones into account, the intersection of the resultant GIT 
 
 However, when considering only the red orbit cones, which are minimal with respect to inclusion, all full dimensional intersections of orbit cones containing a common point -- that is maximal GIT cones -- have the following form when intersecting them with the $\{z_3 = 1\}$\=/plain:
 
-\begin{minipage}{.25\textwidth}\centering
+\begin{minipage}{.245\textwidth}\centering
 	\begin{pspicture}(-0.5, -0.5)(1.25, 1.25)
 	\psaxes{->}(0,0)(1.25,1.25)
 	\psgrid[griddots=20,subgriddots=10,subgriddiv=2,gridlabels=0pt](2,2)
 	\pspolygon[fillstyle=solid,fillcolor=orange,opacity=0.4](0,1)(0,0)(0.5,0.5)
 	\end{pspicture}
 \end{minipage}
-\begin{minipage}{.25\textwidth}\centering
+\begin{minipage}{.245\textwidth}\centering
 	\begin{pspicture}(-0.5, -0.5)(1.25, 1.25)
 	\psaxes{->}(0,0)(1.25,1.25)
 	\psgrid[griddots=20,subgriddots=10,subgriddiv=2,gridlabels=0pt](2,2)
 	\pspolygon[fillstyle=solid,fillcolor=orange,opacity=0.4](1,1)(1,0)(0.5,0.5)
 	\end{pspicture}
 \end{minipage}
-\begin{minipage}{.25\textwidth}\centering
+\begin{minipage}{.245\textwidth}\centering
 	\begin{pspicture}(-0.5, -0.5)(1.25, 1.25)
 	\psaxes{->}(0,0)(1.25,1.25)
 	\psgrid[griddots=20,subgriddots=10,subgriddiv=2,gridlabels=0pt](2,2)
 	\pspolygon[fillstyle=solid,fillcolor=orange,opacity=0.4](0,1)(1,0)(1,1)
 	\end{pspicture}
 \end{minipage}
-\begin{minipage}{.25\textwidth}\centering
+\begin{minipage}{.245\textwidth}\centering
 	\begin{pspicture}(-0.5, -0.5)(1.25, 1.25)
 	\psaxes{->}(0,0)(1.25,1.25)
 	\psgrid[griddots=20,subgriddots=10,subgriddiv=2,gridlabels=0pt](2,2)
