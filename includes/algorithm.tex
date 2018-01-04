@@ -43,7 +43,7 @@ which is the torus corresponding to $\gamma_0$.
 \end{prop}
 \begin{proof}
 	Let $x\in X$. Set $I_x = \{1 \leq i \leq r\ |\ x_i \neq 0\}$ and $J_x = \{1 \leq i \leq r\ |\ x_i = 0\}$. We claim that
-	$$S_T(x) = \langle q_i\ |\ i\in I_x\rangle,$$
+	$$S_T(x) = \langle q_i\ |\ i\in I_x\rangle.$$
 	
 	Let $i\in I_x$. Since $x_i\in\field[\mathbf{x}]$ does not send $x$ to zero, we have
 	$$q_i = \deg(x_i)\in S_T(x).$$
@@ -117,7 +117,7 @@ Next, we implement an algorithm computing $(I : (z_1\cdots z_n)^\infty)$ for arb
 \end{remark}
 
 Since we have
-$$(I:(z_1\cdots z_n)^\infty) = (\dots((I:(z_1)^\infty):(z_2)^\infty):\dots : (z_n)^\infty)\quad\text{(see Appendix \ref{appendix:ideal_quotients})}$$
+$$(I:(z_1\cdots z_n)^\infty) = (\dots((I:(z_1)^\infty):(z_2)^\infty):\dots : (z_n)^\infty)\quad\text{(see Appendix \ref{appendix:ideal_quotients})},$$
 Proposition~\ref{proposition:saturated_monomial} allows us to compute $(I : (z_1\cdots z_n)^\infty)$ by alternating Mora's algorithm with $>_\text{rs}$ and the elimination of factors $z_i$. If a global ordering as in Remark~\ref{remark:satisying_assumption_saturated_monomial} is available, one can integrate the elimination process into the Buchberger's algorithm in order to speed up convergence. Algorithm~\ref{algo:saturated_monomial} (see also \cite[Algorithm 3.3]{gitfan_symmetry}) contains the necessary modifications.
 
 \begin{algorithm}
@@ -272,7 +272,7 @@ Proposition~\ref{proposition:git_fan_connected} allows us to determine all full 
 \begin{proof}
 	\ref{enum_item:git_cones_full_dim_orbit_cones} is trivial since dimensions do not increase when intersecting. \ref{enum_item:git_cones_defining_orbit_cones} clearly holds by the definition of $\lambda$. \ref{enum_item:git_cones_enclosed_orbit_cones} is an immediate consequence of \ref{enum_item:git_cones_full_dim_orbit_cones} and \ref{enum_item:git_cones_defining_orbit_cones}.
 	
-	Let $q\in\lambda^\circ$. Since $q$ is contained in all $\sigma\in\Omega_\ideal^{(k)}$ such that $p\in\sigma$ it follows that $\lambda(q)\subseteq\lambda$. If the inequality would be proper, $\lambda(q)$ would be a proper face of $\lambda$ containing $q$, contradicting $q\in\lambda^\circ$.
+	Let $q\in\lambda^\circ$. Since $q$ is contained in all $\sigma\in\Omega_\ideal^{(k)}$ such that $p\in\sigma$, it follows that $\lambda(q)\subseteq\lambda$. If the inequality would be proper, $\lambda(q)$ would be a proper face of $\lambda$ containing $q$, contradicting $q\in\lambda^\circ$.
 \end{proof}
 
 \begin{algorithm}
