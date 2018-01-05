@@ -402,7 +402,7 @@ Now that we have identified all GIT quotients arising from $T$\=/linearisations,
 
 \begin{defi}[GIT cone, \phantom{}{\cite[Definition 2.8]{git_equivalence}}]
 Let $w\in\Omega_T(X)$. The \emph{GIT cone} associated to $w$ is defined by
-$$\sigma_T(w) = \bigcap_{w\in\omega_T(x)} \omega_T(x).$$
+$$\sigma_T(w) \defeq \bigcap_{w\in\omega_T(x)} \omega_T(x).$$
 \index{sigmaTw@$\sigma_T(w)$}%
 
 The collection of all GIT cones
@@ -457,7 +457,7 @@ We postpone the proof and begin with some lemmas. Since the closure of a $T$\=/o
 
 \begin{lemma}[\phantom{}{\cite[Lemma 2.12]{git_equivalence}}]
 	\label{lemma:git_cones_alternative_descriptions}
-	Let $w\in\Omega	_T(X)$. Then it holds that
+	Let $w\in\Omega	_T(X)$. Then the following properties hold:
 	\begin{enumerate}[label={\upshape(\roman*)}]
 		\item $w\in \omega_T(x) \ \Leftrightarrow\ \sigma_T(w) \subseteq \omega_T(x)\quad \forall x\in X,$
 		\label{enum_item:git_cone_in_all_orbit_cones}
@@ -513,9 +513,7 @@ We postpone the proof and begin with some lemmas. Since the closure of a $T$\=/o
 	 
 	 Now, there exists a point $z_1\in X(w_2) \cap p_1^{-1}(p_1(x_1))$. By Proposition~\ref{prop:good_quotient_properties}, it follows that 
 	 $$\overline{Tx_1} \cap \overline{Tz_1} \cap X(w_1) \neq \emptyset.$$
-	 Applying (\ref{equa:orbit_closed_in_Xw1}) yields
-	 $$Tx_1 \cap \overline{Tz_1} \neq \emptyset$$
-	 which results in
+	 Applying (\ref{equa:orbit_closed_in_Xw1}) yields $Tx_1 \cap \overline{Tz_1} \neq \emptyset$ which results in
 	 $$Tx_1 \subseteq \overline{Tz_1}.$$
 	 By Lemma~\ref{lemma:orbits_correspond_to_orbit_cones}, $\omega_T(x_1)$ is a face of $\omega_T(z_1)$. Because of $z_1\in X(w_2)$, it holds that $w_2\in \omega_T(z_1)$, that is $\sigma_T(w_2) \subseteq \omega_T(z_1)$ by Lemma~\ref{lemma:git_cones_alternative_descriptions}. Repeating the process for $x_2,\dots,x_r$ yields orbit cones $\omega_T(z_i)$ such that $\omega_T(x_i)\preceq \omega_T(z_i)$ and $\sigma_T(w_2) \subseteq \omega_T(z_i)$ for all $1\leq i\leq r$.
 	 
